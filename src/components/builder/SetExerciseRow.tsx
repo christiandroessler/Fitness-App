@@ -2,6 +2,7 @@ import type { SetExercise } from '../../types';
 import { exerciseDurationSeconds, formatDuration } from '../../lib/duration';
 import { StickFigure } from '../StickFigure';
 import { getPoseFrames } from '../figures/poses';
+import { ArrowUp, ArrowDown, Trash } from '@phosphor-icons/react';
 
 interface SetExerciseRowProps {
   uebung: SetExercise;
@@ -99,13 +100,13 @@ export function SetExerciseRow({ uebung, index, count, onChange, onRemove, onMov
       </div>
       <div className="set-exercise-actions">
         <button className="btn-icon" disabled={index === 0} onClick={() => onMove(-1)} aria-label="Nach oben">
-          ↑
+          <ArrowUp size={15} />
         </button>
         <button className="btn-icon" disabled={index === count - 1} onClick={() => onMove(1)} aria-label="Nach unten">
-          ↓
+          <ArrowDown size={15} />
         </button>
         <button className="btn-icon btn-icon-danger" onClick={onRemove} aria-label="Entfernen">
-          🗑
+          <Trash size={15} />
         </button>
       </div>
     </div>

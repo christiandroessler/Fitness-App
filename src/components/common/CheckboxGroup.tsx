@@ -11,16 +11,15 @@ export function CheckboxGroup<T extends string>({ legend, options, labels, selec
     onChange(selected.includes(value) ? selected.filter((v) => v !== value) : [...selected, value]);
   }
   return (
-    <fieldset className="checkbox-group">
-      <legend>{legend}</legend>
-      <div className="checkbox-group-grid">
+    <div>
+      <span className="meta-label">{legend}</span>
+      <div className="chip-row" style={{ marginTop: 6 }}>
         {options.map((opt) => (
-          <label key={opt} className="checkbox-label">
-            <input type="checkbox" checked={selected.includes(opt)} onChange={() => toggle(opt)} />
+          <button key={opt} type="button" className={`chip ${selected.includes(opt) ? 'active' : ''}`} onClick={() => toggle(opt)}>
             {labels[opt]}
-          </label>
+          </button>
         ))}
       </div>
-    </fieldset>
+    </div>
   );
 }

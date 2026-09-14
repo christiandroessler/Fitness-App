@@ -17,8 +17,8 @@ export default defineConfig({
         name: 'Kraft & Mobility',
         short_name: 'Kraft&Mob',
         description: 'Radsportspezifische Kraft- und Mobility-Einheiten zusammenstellen, generieren und per Timer absolvieren.',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        theme_color: '#161826',
+        background_color: '#161826',
         display: 'standalone',
         orientation: 'portrait-primary',
         // start_url/scope werden von vite-plugin-pwa aus `base` übernommen.

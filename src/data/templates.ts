@@ -8,6 +8,7 @@ function teil(o: Partial<Programmteil> & Pick<Programmteil, 'id' | 'name' | 'dau
 export const VORLAGE_KRAFT: Template = {
   id: 'vorlage-kraft',
   name: 'Kraft',
+  beschreibung: 'RAMP-Aufwärmen, zwei Hauptübungen als Kraftsätze mit Füllübungen in den Satzpausen, Isometrie-Serie, optionaler Abschluss.',
   programmteile: [
     // "Raise, Activate, Mobilise" (6.1) wird als drei einzelne 2-Minuten-Teile abgebildet,
     // damit tatsächlich je 2 Minuten aus jeder RAMP-Phase ausgewählt werden (statt frei
@@ -46,6 +47,7 @@ export const VORLAGE_KRAFT: Template = {
 export const VORLAGE_STABILITAET: Template = {
   id: 'vorlage-stabilitaet',
   name: 'Stabilität & Mobility',
+  beschreibung: 'Aufwärmen, Rumpf in beiden Ebenen, Hüfte/Gesäß mit Band, Nacken, abschließende Beweglichkeit.',
   programmteile: [
     teil({ id: 'stab-aufwaermen', name: 'Aufwärmen', dauer_min: 5, auswahlregel: { kategorien: ['erwaermung', 'aktivierung', 'mobilisation'] } }),
     teil({ id: 'stab-rumpf', name: 'Rumpf', dauer_min: 10, auswahlregel: { bewegungsmuster: ['rumpf_sagittal', 'rumpf_frontal'] } }),

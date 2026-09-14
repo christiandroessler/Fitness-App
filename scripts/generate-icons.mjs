@@ -9,28 +9,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = join(__dirname, '..', 'public', 'icons');
 mkdirSync(outDir, { recursive: true });
 
+// Markenzeichen aus dem Design-System: Teal-Balken + Rot-Balken (siehe App-Header).
 const flatSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#0f172a"/>
-  <g stroke="#38bdf8" stroke-width="34" stroke-linecap="round" fill="none">
-    <line x1="80" y1="256" x2="432" y2="256"/>
-    <line x1="128" y1="176" x2="128" y2="336"/>
-    <line x1="176" y1="136" x2="176" y2="376"/>
-    <line x1="336" y1="136" x2="336" y2="376"/>
-    <line x1="384" y1="176" x2="384" y2="336"/>
-  </g>
+  <rect width="512" height="512" fill="#161826"/>
+  <rect x="188" y="128" width="72" height="256" rx="30" fill="#45b8b4"/>
+  <rect x="296" y="128" width="32" height="256" rx="16" fill="#e5495b"/>
 </svg>`;
 
 const maskableSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#0f172a"/>
-  <g stroke="#38bdf8" stroke-width="26" stroke-linecap="round" fill="none">
-    <line x1="146" y1="256" x2="366" y2="256"/>
-    <line x1="180" y1="196" x2="180" y2="316"/>
-    <line x1="214" y1="166" x2="214" y2="346"/>
-    <line x1="298" y1="166" x2="298" y2="346"/>
-    <line x1="332" y1="196" x2="332" y2="316"/>
-  </g>
+  <rect width="512" height="512" fill="#161826"/>
+  <rect x="208" y="176" width="56" height="160" rx="24" fill="#45b8b4"/>
+  <rect x="288" y="176" width="24" height="160" rx="12" fill="#e5495b"/>
 </svg>`;
 
 await sharp(Buffer.from(flatSvg)).resize(192, 192).png().toFile(join(outDir, 'icon-192.png'));
