@@ -73,9 +73,9 @@ des Nutzers verbinden und in dessen Drive schreiben kann.
      Neuanmeldung.
 4. **APIs & Dienste → Anmeldedaten → Anmeldedaten erstellen → OAuth-Client-ID**:
    - Anwendungstyp "Webanwendung".
-   - **Autorisierte JavaScript-Quellen**: die HTTPS-URL des Hostings eintragen
-     (z. B. `https://<nutzername>.github.io`), für lokale Entwicklung zusätzlich
-     `http://localhost:5173`.
+   - **Autorisierte JavaScript-Quellen**: `https://christiandroessler.github.io`
+     eintragen (siehe Abschnitt "Hosting" unten), für lokale Entwicklung
+     zusätzlich `http://localhost:5173`.
    - Es wird **keine** Redirect-URI benötigt (Google Identity Services'
      Token-Client läuft ohne Redirect).
 5. Die erzeugte Client-ID (Format `xxxxx.apps.googleusercontent.com`) in der
@@ -85,11 +85,28 @@ des Nutzers verbinden und in dessen Drive schreiben kann.
 Die Anmeldung erfolgt einmalig pro Gerät; danach erneuert die App das Token bei
 Bedarf im Hintergrund, solange die Google-Sitzung im Browser aktiv bleibt.
 
-## Hosting
+## Hosting (GitHub Pages)
 
-Statisches Hosting genügt (z. B. GitHub Pages, Cloudflare Pages, Netlify) —
-`npm run build` erzeugt den `dist/`-Ordner. **HTTPS ist zwingend** (Voraussetzung
-für OAuth, Wake Lock und Homescreen-Installation).
+Das Repo enthält einen GitHub-Actions-Workflow (`.github/workflows/deploy-pages.yml`),
+der bei jedem Push auf `main` automatisch baut und auf GitHub Pages veröffentlicht.
+
+**Einmalig einzurichten (nur über die GitHub-Weboberfläche möglich):**
+Repo → **Settings → Pages → Build and deployment → Source: "GitHub Actions"**
+auswählen.
+
+Nach dem ersten erfolgreichen Durchlauf ist die App erreichbar unter:
+
+```
+https://christiandroessler.github.io/Fitness-App/
+```
+
+Diese URL auch als autorisierte JavaScript-Quelle im Google-OAuth-Client
+eintragen (siehe oben). Den Workflow manuell anstoßen geht über den
+"Run workflow"-Button im Tab **Actions** (auch schon vor dem Mergen des PRs).
+
+Der `base`-Pfad in `vite.config.ts` ist fest auf `/Fitness-App/` gesetzt, passend
+zu diesem Repo-Namen als Projekt-Pages-Seite. Bei einer Umbenennung des Repos
+oder einem Umzug auf eine eigene Domain muss dieser Wert angepasst werden.
 
 ## Mindestversionen
 
