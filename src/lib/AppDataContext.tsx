@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { AppData } from '../types';
+import type { AppData, SetExercise } from '../types';
 import { emptyAppData } from '../types';
 import { STARTBIBLIOTHEK } from '../data/exercises';
+import { EXERCISE_HINWEISE } from '../data/exerciseHints';
 import { STARTVORLAGEN } from '../data/templates';
 import * as authApi from './googleAuth';
 import * as storage from './storage';
@@ -12,6 +13,23 @@ function buildSeedAppData(): AppData {
     ...emptyAppData(),
     exercises: STARTBIBLIOTHEK,
     templates: STARTVORLAGEN
+  };
+}
+
+function mitNachgetragenenHinweisen(u: SetExercise): SetExercise {
+  const hinweise = u.hinweise?.length ? u.hinweise : EXERCISE_HINWEISE[u.exerciseId];
+  const fuellUebung = u.fuellUebung ? mitNachgetragenenHinweisen(u.fuellUebung) : u.fuellUebung;
+  if (hinweise === u.hinweise && fuellUebung === u.fuellUebung) return u;
+  return { ...u, hinweise: hinweise ?? u.hinweise, fuellUebung };
+}
+
+/** Trägt bei Altdaten (gespeichert, bevor es Ausführungshinweise gab) die Hinweise
+ * für Standardübungen nach — eigene/bereits befüllte Hinweise bleiben unangetastet. */
+function backfillHinweise(data: AppData): AppData {
+  return {
+    ...data,
+    exercises: data.exercises.map((ex) => (ex.hinweise?.length || !EXERCISE_HINWEISE[ex.id] ? ex : { ...ex, hinweise: EXERCISE_HINWEISE[ex.id] })),
+    sets: data.sets.map((set) => ({ ...set, uebungen: set.uebungen.map(mitNachgetragenenHinweisen) }))
   };
 }
 
@@ -72,7 +90,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const dataRef = useRef(state.data);
 
   const loadLocal = useCallback(() => {
-    const data = storage.loadLocalFallback(buildSeedAppData);
+    const data = backfillHinweise(storage.loadLocalFallback(buildSeedAppData));
     skipNextPersist.current = true;
     setState((s) => ({ ...s, status: 'ready', mode: 'local', data, error: null }));
   }, []);
@@ -84,7 +102,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       const result = await storage.loadFromDrive(() => local);
       fileRef.current = { fileId: result.fileId, revision: result.revision };
       skipNextPersist.current = true;
-      setState((s) => ({ ...s, status: 'ready', mode: 'drive', data: result.data, error: null, signedIn: true, revision: result.revision, lastSyncedAt: new Date().toISOString() }));
+      const data = backfillHinweise(result.data);
+      setState((s) => ({ ...s, status: 'ready', mode: 'drive', data, error: null, signedIn: true, revision: result.revision, lastSyncedAt: new Date().toISOString() }));
     } catch (e) {
       setState((s) => ({ ...s, status: 'error', error: e instanceof Error ? e.message : String(e) }));
     }
@@ -185,7 +204,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     storage.acceptRemoteRevision(conflict.remoteRevision);
     fileRef.current = fileRef.current ? { ...fileRef.current, revision: conflict.remoteRevision } : null;
     skipNextPersist.current = true;
-    setState((s) => ({ ...s, data: conflict.remote, conflict: null, revision: conflict.remoteRevision, lastSyncedAt: new Date().toISOString() }));
+    setState((s) => ({ ...s, data: backfillHinweise(conflict.remote), conflict: null, revision: conflict.remoteRevision, lastSyncedAt: new Date().toISOString() }));
   }, [state.conflict]);
 
   const exportData = useCallback(() => {
@@ -195,7 +214,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const importData = useCallback(
     async (file: File) => {
       const imported = await storage.importFromFile(file);
-      mutate(() => imported);
+      mutate(() => backfillHinweise(imported));
     },
     [mutate]
   );
