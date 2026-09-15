@@ -32,6 +32,10 @@ html,
 body,
 #root {
   height: 100%;
+  /* iOS Safari zählt bei 100% die volle Seite inkl. der später eingeblendeten
+     Symbolleisten mit; ohne dvh-Unterstützung bleibt die 100%-Kette als
+     Fallback bestehen. */
+  height: 100dvh;
 }
 
 body {
@@ -73,6 +77,7 @@ a:hover {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   max-width: 640px;
   margin: 0 auto;
 }
