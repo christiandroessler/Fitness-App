@@ -1,35 +1,18 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { AppData, SetExercise } from '../types';
+import type { AppData } from '../types';
 import { emptyAppData } from '../types';
 import { STARTBIBLIOTHEK } from '../data/exercises';
-import { EXERCISE_HINWEISE } from '../data/exerciseHints';
 import { STARTVORLAGEN } from '../data/templates';
 import * as authApi from './googleAuth';
 import * as storage from './storage';
 import { ConflictError } from './storage';
+import { backfillHinweise } from './migrations';
 
 function buildSeedAppData(): AppData {
   return {
     ...emptyAppData(),
     exercises: STARTBIBLIOTHEK,
     templates: STARTVORLAGEN
-  };
-}
-
-function mitNachgetragenenHinweisen(u: SetExercise): SetExercise {
-  const hinweise = u.hinweise?.length ? u.hinweise : EXERCISE_HINWEISE[u.exerciseId];
-  const fuellUebung = u.fuellUebung ? mitNachgetragenenHinweisen(u.fuellUebung) : u.fuellUebung;
-  if (hinweise === u.hinweise && fuellUebung === u.fuellUebung) return u;
-  return { ...u, hinweise: hinweise ?? u.hinweise, fuellUebung };
-}
-
-/** Trägt bei Altdaten (gespeichert, bevor es Ausführungshinweise gab) die Hinweise
- * für Standardübungen nach — eigene/bereits befüllte Hinweise bleiben unangetastet. */
-function backfillHinweise(data: AppData): AppData {
-  return {
-    ...data,
-    exercises: data.exercises.map((ex) => (ex.hinweise?.length || !EXERCISE_HINWEISE[ex.id] ? ex : { ...ex, hinweise: EXERCISE_HINWEISE[ex.id] })),
-    sets: data.sets.map((set) => ({ ...set, uebungen: set.uebungen.map(mitNachgetragenenHinweisen) }))
   };
 }
 
@@ -53,6 +36,8 @@ interface AppDataState {
   syncing: boolean;
   revision?: string;
   lastSyncedAt?: string;
+  /** E-Mail-Adresse des verbundenen Google-Konts, nur zur Anzeige (Transparenz Drive-Sync). */
+  userEmail?: string;
 }
 
 interface AppDataApi {
@@ -92,18 +77,29 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const loadLocal = useCallback(() => {
     const data = backfillHinweise(storage.loadLocalFallback(buildSeedAppData));
     skipNextPersist.current = true;
-    setState((s) => ({ ...s, status: 'ready', mode: 'local', data, error: null }));
+    setState((s) => ({ ...s, status: 'ready', mode: 'local', data, error: null, userEmail: undefined }));
   }, []);
 
   const loadDrive = useCallback(async () => {
     setState((s) => ({ ...s, status: 'loading' }));
     try {
       const local = storage.loadLocalFallback(buildSeedAppData);
-      const result = await storage.loadFromDrive(() => local);
+      const token = await authApi.getAccessToken();
+      const [result, userEmail] = await Promise.all([storage.loadFromDrive(() => local), authApi.fetchUserEmail(token)]);
       fileRef.current = { fileId: result.fileId, revision: result.revision };
       skipNextPersist.current = true;
       const data = backfillHinweise(result.data);
-      setState((s) => ({ ...s, status: 'ready', mode: 'drive', data, error: null, signedIn: true, revision: result.revision, lastSyncedAt: new Date().toISOString() }));
+      setState((s) => ({
+        ...s,
+        status: 'ready',
+        mode: 'drive',
+        data,
+        error: null,
+        signedIn: true,
+        revision: result.revision,
+        lastSyncedAt: new Date().toISOString(),
+        userEmail: userEmail ?? undefined
+      }));
     } catch (e) {
       setState((s) => ({ ...s, status: 'error', error: e instanceof Error ? e.message : String(e) }));
     }

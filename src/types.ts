@@ -252,6 +252,17 @@ export interface SessionLogEntry {
   status: SessionStatus;
 }
 
+/** Ziel-Gesamtdauer einer generierten Einheit, als grobe Vorgabe (7.2) — der Generator
+ * skaliert die Programmteile der gewählten Vorlage proportional darauf. */
+export type DauerBand = 'kurz' | 'mittel' | 'lang';
+export const DAUER_BAND_LABEL: Record<DauerBand, string> = {
+  kurz: '20–30 min',
+  mittel: '31–45 min',
+  lang: '46–60 min'
+};
+
+export type Theme = 'dunkel' | 'hell';
+
 export interface AppSettings {
   letzteNGenerator: number;
   toeneStumm: boolean;
@@ -260,6 +271,9 @@ export interface AppSettings {
   verfuegbaresEquipment: Equipment[];
   /** Ziel für den Wochenfortschritts-Ring auf dem Start-Screen (Anzahl Einheiten/Woche). */
   wochenzielEinheiten: number;
+  /** Ziel-Gesamtdauer generierter Einheiten. */
+  zielDauerBand: DauerBand;
+  theme: Theme;
 }
 
 export const ALLE_EQUIPMENT: Equipment[] = [
@@ -293,6 +307,6 @@ export function emptyAppData(): AppData {
     templates: [],
     sets: [],
     history: [],
-    settings: { letzteNGenerator: 2, toeneStumm: false, verfuegbaresEquipment: [...ALLE_EQUIPMENT], wochenzielEinheiten: 3 }
+    settings: { letzteNGenerator: 2, toeneStumm: false, verfuegbaresEquipment: [...ALLE_EQUIPMENT], wochenzielEinheiten: 3, zielDauerBand: 'mittel', theme: 'dunkel' }
   };
 }

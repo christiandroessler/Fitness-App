@@ -1,8 +1,13 @@
 import { useRef, useState } from 'react';
-import { ALLE_EQUIPMENT, EQUIPMENT_LABEL, type Equipment } from '../../types';
+import { ALLE_EQUIPMENT, EQUIPMENT_LABEL, type Equipment, type Theme } from '../../types';
 import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
 import { getClientId } from '../../lib/googleAuth';
 import { Barbell, Chair, CloudCheck, CloudSlash, Couch, DoorOpen, Stairs, TShirt, WaveSine, Wall, type Icon } from '@phosphor-icons/react';
+
+const THEMES: { id: Theme; label: string }[] = [
+  { id: 'dunkel', label: 'Dunkel' },
+  { id: 'hell', label: 'Hell' }
+];
 
 const EQUIPMENT_ICON: Record<Equipment, Icon> = {
   langhantel_20kg: Barbell,
@@ -70,6 +75,7 @@ export function SettingsScreen() {
             : 'Ohne Verbindung werden Daten nur lokal in diesem Browser gespeichert.'}
           {state.syncing && ' · synchronisiere…'}
         </p>
+        {verbunden && <p className="settings-hint">Konto: {state.userEmail ?? 'E-Mail nicht verfügbar — bitte einmal trennen und neu verbinden.'}</p>}
 
         <div className="settings-actions-row">
           <button className="btn-secondary" onClick={api.exportData}>
@@ -156,6 +162,22 @@ export function SettingsScreen() {
             onChange={(e) => api.mutate((d) => ({ ...d, settings: { ...d.settings, wochenzielEinheiten: Number(e.target.value) } }))}
           />
         </label>
+      </div>
+
+      <div className="card settings-section">
+        <h3>Design</h3>
+        <div className="segmented">
+          {THEMES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`segmented-item ${(state.data.settings.theme ?? 'dunkel') === t.id ? 'active' : ''}`}
+              onClick={() => api.mutate((d) => ({ ...d, settings: { ...d.settings, theme: t.id } }))}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

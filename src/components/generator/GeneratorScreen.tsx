@@ -1,12 +1,14 @@
 import { useRef, useState } from 'react';
-import type { TrainingSet } from '../../types';
-import { KATEGORIE_LABEL } from '../../types';
+import type { DauerBand, TrainingSet } from '../../types';
+import { DAUER_BAND_LABEL, KATEGORIE_LABEL } from '../../types';
 import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
-import { generateEinheit } from '../../lib/generator';
+import { DAUER_BAND_SKALIERUNG, generateEinheit } from '../../lib/generator';
 import { SetBuilder } from '../builder/SetBuilder';
 import { WeeklyRing } from '../rewards/WeeklyRing';
 import { berechneStreak, wochenFortschritt } from '../../lib/streak';
 import { Warning } from '@phosphor-icons/react';
+
+const DAUER_BAENDER: DauerBand[] = ['kurz', 'mittel', 'lang'];
 
 interface GeneratorScreenProps {
   onStart: (set: TrainingSet) => void;
@@ -24,12 +26,14 @@ export function GeneratorScreen({ onStart }: GeneratorScreenProps) {
   const template = data.templates.find((t) => t.id === templateId) ?? data.templates[0];
   const optionalerTeil = template?.programmteile.find((t) => t.optional);
 
+  const zielDauerBand = data.settings.zielDauerBand ?? 'mittel';
+
   function generieren() {
     if (!template) return;
     const letzteN = data.history.slice(0, data.settings.letzteNGenerator).flatMap((h) => h.absolvierteUebungen.map((u) => u.exerciseId));
     const vermeideIds = new Set([...letzteN, ...zuletztGeneriertRef.current]);
     const verfuegbar = new Set(data.settings.verfuegbaresEquipment);
-    const res = generateEinheit(template, data.exercises, { verfuegbaresEquipment: verfuegbar, vermeideIds, nurPflichtteile: nurPflicht });
+    const res = generateEinheit(template, data.exercises, { verfuegbaresEquipment: verfuegbar, vermeideIds, nurPflichtteile: nurPflicht, zielDauerBand });
     zuletztGeneriertRef.current = res.set.uebungen.map((u) => u.exerciseId).slice(0, 12);
     setErgebnis(res.set);
     setWarnungen(res.warnungen);
@@ -93,12 +97,28 @@ export function GeneratorScreen({ onStart }: GeneratorScreenProps) {
           <div className="filter-pills" style={{ flexWrap: 'wrap', paddingTop: 8 }}>
             {template.programmteile.map((teil) => (
               <span key={teil.id} className="pill">
-                {teil.name} {teil.dauer_min}′
+                {teil.name} {Math.max(1, Math.round(teil.dauer_min * DAUER_BAND_SKALIERUNG[zielDauerBand]))}′
               </span>
             ))}
           </div>
         </div>
       )}
+
+      <div className="screen-header">
+        <span className="meta-label">Ziel-Dauer</span>
+      </div>
+      <div className="segmented">
+        {DAUER_BAENDER.map((band) => (
+          <button
+            key={band}
+            type="button"
+            className={`segmented-item ${band === zielDauerBand ? 'active' : ''}`}
+            onClick={() => api.mutate((d) => ({ ...d, settings: { ...d.settings, zielDauerBand: band } }))}
+          >
+            {DAUER_BAND_LABEL[band]}
+          </button>
+        ))}
+      </div>
 
       {optionalerTeil && (
         <button type="button" className="toggle-row" onClick={() => setNurPflicht((v) => !v)}>

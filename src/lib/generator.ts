@@ -1,9 +1,30 @@
 // Zufallsgenerator, Lastenheft 7.2.
-import type { AuswahlRegel, Bewegungsmuster, Equipment, Exercise, KraftsatzParameter, Kategorie, Programmteil, SetExercise, Template, TrainingSet } from '../types';
+import type { AuswahlRegel, Bewegungsmuster, DauerBand, Equipment, Exercise, KraftsatzParameter, Kategorie, Programmteil, SetExercise, Template, TrainingSet } from '../types';
 import { exerciseDurationSeconds } from './duration';
 import { newId } from './id';
 
 const WARMUP_KATEGORIEN: Kategorie[] = ['erwaermung', 'aktivierung', 'mobilisation'];
+
+/** Skalierungsfaktoren relativ zur in den Vorlagen hinterlegten Nominal-Dauer (die
+ * "mittel" entspricht, unskaliert). Empirisch gewählt, da die tatsächliche generierte
+ * Dauer von der Zufallsauswahl abhängt und nur näherungsweise steuerbar ist. */
+export const DAUER_BAND_SKALIERUNG: Record<DauerBand, number> = {
+  kurz: 0.65,
+  mittel: 1,
+  lang: 1.35
+};
+
+/** Skaliert die Dauer-Vorgabe eines Programmteils proportional zum gewählten Dauer-Band.
+ * Bei Kraftteilen (deren tatsächliche Dauer nicht über dauer_min, sondern über
+ * satzanzahl/satzdauer_s gesteuert wird) wird stattdessen die Satzanzahl skaliert. */
+function skaliereTeil(t: Programmteil, scale: number): Programmteil {
+  if (scale === 1) return t;
+  const dauer_min = Math.max(1, Math.round(t.dauer_min * scale));
+  if (t.istKraftteil && t.satzanzahl) {
+    return { ...t, dauer_min, satzanzahl: Math.max(1, Math.round(t.satzanzahl * scale)) };
+  }
+  return { ...t, dauer_min };
+}
 
 function matchesRegel(ex: Exercise, regel: AuswahlRegel): boolean {
   const kOk = !regel.kategorien || regel.kategorien.includes(ex.kategorie);
@@ -178,6 +199,8 @@ export interface GeneratorOptions {
   vermeideIds: ReadonlySet<string>;
   /** Optionale Programmteile (Abschluss, 6.1) auslassen. */
   nurPflichtteile?: boolean;
+  /** Ziel-Gesamtdauer; ohne Angabe unskaliert (entspricht "mittel"). */
+  zielDauerBand?: DauerBand;
 }
 
 export interface GeneratorErgebnis {
@@ -186,7 +209,8 @@ export interface GeneratorErgebnis {
 }
 
 export function generateEinheit(template: Template, bibliothek: Exercise[], options: GeneratorOptions): GeneratorErgebnis {
-  const teile = template.programmteile.filter((t) => !(options.nurPflichtteile && t.optional));
+  const scale = DAUER_BAND_SKALIERUNG[options.zielDauerBand ?? 'mittel'];
+  const teile = template.programmteile.filter((t) => !(options.nurPflichtteile && t.optional)).map((t) => skaliereTeil(t, scale));
   const uebungen: SetExercise[] = [];
   const warnungen: string[] = [];
   const usedThisRun = new Set<string>();

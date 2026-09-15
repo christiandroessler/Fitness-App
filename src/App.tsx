@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { TrainingSet } from './types';
 import { AppDataProvider, useAppDataApi, useAppDataState } from './lib/AppDataContext';
 import { ConflictDialog } from './components/ConflictDialog';
@@ -28,6 +28,11 @@ function Shell() {
   const api = useAppDataApi();
   const [tab, setTab] = useState<Tab>('generator');
   const [activeTimerSet, setActiveTimerSet] = useState<TrainingSet | null>(null);
+
+  useEffect(() => {
+    const hell = state.data.settings.theme === 'hell';
+    document.documentElement.setAttribute('data-theme', hell ? 'light' : 'dark');
+  }, [state.data.settings.theme]);
 
   if (activeTimerSet) {
     return <TimerScreen set={activeTimerSet} onDone={() => setActiveTimerSet(null)} />;

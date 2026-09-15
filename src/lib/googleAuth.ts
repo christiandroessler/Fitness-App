@@ -4,6 +4,11 @@
 // aktiv ist.
 const GIS_SRC = 'https://accounts.google.com/gsi/client';
 export const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+// Zusätzlich zum Speicher-Scope: nur die E-Mail-Adresse, um in den Einstellungen
+// transparent zu zeigen, mit welchem Google-Konto synchronisiert wird (kein
+// Zugriff auf weitere Profildaten).
+const EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email';
+const SCOPES = `${DRIVE_SCOPE} ${EMAIL_SCOPE}`;
 
 const CLIENT_ID_KEY = 'kraftmob_gcp_client_id';
 const SIGNED_IN_ONCE_KEY = 'kraftmob_signed_in_once';
@@ -72,7 +77,7 @@ async function ensureTokenClient(): Promise<GoogleTokenClient> {
   if (!tokenClient) {
     tokenClient = window.google!.accounts.oauth2.initTokenClient({
       client_id: clientId,
-      scope: DRIVE_SCOPE,
+      scope: SCOPES,
       callback: () => {}
     });
   }
@@ -116,6 +121,19 @@ export async function getAccessToken(): Promise<string> {
     };
     client.requestAccessToken({ prompt: '' });
   });
+}
+
+/** Nur für die Anzeige in den Einstellungen ("mit welchem Konto verbunden?") —
+ * kein Fehler, wenn der Nutzer die E-Mail-Berechtigung (noch) nicht erteilt hat. */
+export async function fetchUserEmail(accessToken: string): Promise<string | null> {
+  try {
+    const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: `Bearer ${accessToken}` } });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { email?: string };
+    return json.email ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export function signOut(): void {
