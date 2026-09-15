@@ -33,6 +33,8 @@ interface AppDataState {
   error: string | null;
   conflict: ConflictState | null;
   syncing: boolean;
+  revision?: string;
+  lastSyncedAt?: string;
 }
 
 interface AppDataApi {
@@ -82,7 +84,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       const result = await storage.loadFromDrive(() => local);
       fileRef.current = { fileId: result.fileId, revision: result.revision };
       skipNextPersist.current = true;
-      setState((s) => ({ ...s, status: 'ready', mode: 'drive', data: result.data, error: null, signedIn: true }));
+      setState((s) => ({ ...s, status: 'ready', mode: 'drive', data: result.data, error: null, signedIn: true, revision: result.revision, lastSyncedAt: new Date().toISOString() }));
     } catch (e) {
       setState((s) => ({ ...s, status: 'error', error: e instanceof Error ? e.message : String(e) }));
     }
@@ -112,7 +114,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       try {
         const res = await storage.saveToDrive(file.fileId, file.revision, data);
         fileRef.current = { fileId: file.fileId, revision: res.revision };
-        setState((s) => ({ ...s, syncing: false }));
+        setState((s) => ({ ...s, syncing: false, revision: res.revision, lastSyncedAt: new Date().toISOString() }));
       } catch (e) {
         setState((s) => ({ ...s, syncing: false }));
         if (e instanceof ConflictError) {
@@ -171,7 +173,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     try {
       const res = await storage.forceSaveToDrive(file.fileId, conflict.mine);
       fileRef.current = { fileId: file.fileId, revision: res.revision };
-      setState((s) => ({ ...s, syncing: false, conflict: null }));
+      setState((s) => ({ ...s, syncing: false, conflict: null, revision: res.revision, lastSyncedAt: new Date().toISOString() }));
     } catch (e) {
       setState((s) => ({ ...s, syncing: false, error: e instanceof Error ? e.message : String(e) }));
     }
@@ -183,7 +185,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     storage.acceptRemoteRevision(conflict.remoteRevision);
     fileRef.current = fileRef.current ? { ...fileRef.current, revision: conflict.remoteRevision } : null;
     skipNextPersist.current = true;
-    setState((s) => ({ ...s, data: conflict.remote, conflict: null }));
+    setState((s) => ({ ...s, data: conflict.remote, conflict: null, revision: conflict.remoteRevision, lastSyncedAt: new Date().toISOString() }));
   }, [state.conflict]);
 
   const exportData = useCallback(() => {

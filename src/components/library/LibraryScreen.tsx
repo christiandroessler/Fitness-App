@@ -1,10 +1,26 @@
 import { useMemo, useState } from 'react';
-import type { Bewegungsmuster, Equipment, Exercise, Kategorie } from '../../types';
+import type { Bewegungsmuster, Equipment, Exercise, ExerciseParameter, Kategorie } from '../../types';
 import { BEWEGUNGSMUSTER_LABEL, EQUIPMENT_LABEL, KATEGORIE_LABEL } from '../../types';
 import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
 import { ExerciseForm } from './ExerciseForm';
 import { StickFigure } from '../StickFigure';
 import { getPoseFrames } from '../figures/poses';
+import { CaretRight, MagnifyingGlass, Plus } from '@phosphor-icons/react';
+
+const KATEGORIEN = Object.keys(KATEGORIE_LABEL) as Kategorie[];
+
+function paramSummary(p: ExerciseParameter): string {
+  switch (p.art) {
+    case 'halten':
+      return p.wiederholungen > 1 ? `${p.dauer_s} s × ${p.wiederholungen}` : `${p.dauer_s} s`;
+    case 'intervall':
+      return `${p.arbeit_s}/${p.pause_s} s × ${p.anzahl}`;
+    case 'kraftsatz':
+      return `${p.satzanzahl} × ${p.satzdauer_s} s`;
+    case 'isometrie_serie':
+      return `${p.kontraktion_s} s × ${p.anzahl}`;
+  }
+}
 
 export function LibraryScreen() {
   const { data } = useAppDataState();
@@ -59,21 +75,33 @@ export function LibraryScreen() {
     <div className="screen">
       <div className="screen-header">
         <h2>Übungsbibliothek</h2>
-        <button className="btn-primary" onClick={() => setEditing('new')}>
-          + Neue Übung
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span className="screen-header-meta">
+            {gefiltert.length} von {data.exercises.length}
+          </span>
+          <button className="btn-icon" onClick={() => setEditing('new')} aria-label="Neue Übung">
+            <Plus size={18} />
+          </button>
+        </div>
       </div>
 
-      <div className="library-filters">
-        <input type="search" placeholder="Suchen…" value={suche} onChange={(e) => setSuche(e.target.value)} />
-        <select value={kategorie} onChange={(e) => setKategorie(e.target.value as Kategorie | '')}>
-          <option value="">Alle Kategorien</option>
-          {Object.entries(KATEGORIE_LABEL).map(([k, label]) => (
-            <option key={k} value={k}>
-              {label}
-            </option>
-          ))}
-        </select>
+      <div className="search-field">
+        <MagnifyingGlass size={18} />
+        <input type="search" placeholder="Übung suchen…" value={suche} onChange={(e) => setSuche(e.target.value)} />
+      </div>
+
+      <div className="filter-pills">
+        <button className={`filter-pill ${kategorie === '' ? 'active' : ''}`} onClick={() => setKategorie('')}>
+          Alle
+        </button>
+        {KATEGORIEN.map((k) => (
+          <button key={k} className={`filter-pill ${kategorie === k ? 'active' : ''}`} onClick={() => setKategorie(kategorie === k ? '' : k)}>
+            {KATEGORIE_LABEL[k]}
+          </button>
+        ))}
+      </div>
+
+      <div className="form-row">
         <select value={bewegungsmuster} onChange={(e) => setBewegungsmuster(e.target.value as Bewegungsmuster | '')}>
           <option value="">Alle Bewegungsmuster</option>
           {Object.entries(BEWEGUNGSMUSTER_LABEL).map(([k, label]) => (
@@ -92,22 +120,25 @@ export function LibraryScreen() {
         </select>
       </div>
 
-      <p className="library-count">{gefiltert.length} Übungen</p>
+      <p className="screen-header-meta">{gefiltert.length} Übungen</p>
 
-      <div className="library-list">
+      <div className="list">
         {gefiltert.map((ex) => {
           const frames = getPoseFrames(ex.figur_id);
           return (
-            <button key={ex.id} className="library-item" onClick={() => setEditing(ex)}>
-              <div className="library-item-figure">{frames ? <StickFigure frames={frames} active={false} /> : <div className="figure-placeholder">🏋</div>}</div>
-              <div className="library-item-info">
+            <button key={ex.id} className="list-row" onClick={() => setEditing(ex)}>
+              <div className="list-row-figure">{frames ? <StickFigure frames={frames} active={false} /> : <div className="figure-placeholder">🏋</div>}</div>
+              <div className="list-row-info">
                 <strong>{ex.name}</strong>
-                <span>
+                <span className="list-row-meta">
                   {KATEGORIE_LABEL[ex.kategorie]} · {BEWEGUNGSMUSTER_LABEL[ex.bewegungsmuster]}
                   {ex.einseitig ? ' · einseitig' : ''}
                 </span>
-                <span className="library-item-equipment">{ex.equipment.length ? ex.equipment.map((e) => EQUIPMENT_LABEL[e]).join(', ') : 'kein Equipment'}</span>
+                <span className="list-row-meta">
+                  {ex.equipment.length ? ex.equipment.map((e) => EQUIPMENT_LABEL[e]).join(', ') : 'kein Equipment'} · {paramSummary(ex.parameter)}
+                </span>
               </div>
+              <CaretRight size={16} className="list-row-chevron" />
             </button>
           );
         })}

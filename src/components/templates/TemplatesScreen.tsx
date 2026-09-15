@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Template } from '../../types';
 import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
 import { TemplateEditor, neueVorlage } from './TemplateEditor';
+import { CaretRight, Plus } from '@phosphor-icons/react';
 
 export function TemplatesScreen() {
   const { data } = useAppDataState();
@@ -30,19 +31,23 @@ export function TemplatesScreen() {
     <div className="screen">
       <div className="screen-header">
         <h2>Vorlagen</h2>
-        <button className="btn-primary" onClick={addTemplate}>
-          + Neue Vorlage
+        <button className="btn-icon" onClick={addTemplate} aria-label="Neue Vorlage">
+          <Plus size={18} />
         </button>
       </div>
-      <div className="library-list">
+      <div className="list">
         {data.templates.map((t) => (
-          <button key={t.id} className="library-item" onClick={() => setEditingId(t.id)}>
-            <div className="library-item-info">
+          <button key={t.id} className="list-row" onClick={() => setEditingId(t.id)}>
+            <div className="list-row-info">
               <strong>{t.name}</strong>
-              <span>{t.programmteile.length} Programmteile · {t.programmteile.reduce((s, p) => s + p.dauer_min, 0)} min geplant</span>
+              <span className="list-row-meta">
+                {t.programmteile.length} Programmteile · {t.programmteile.reduce((s, p) => s + p.dauer_min, 0)} min geplant
+              </span>
             </div>
+            <CaretRight size={16} className="list-row-chevron" />
           </button>
         ))}
+        {data.templates.length === 0 && <p className="empty-hint">Noch keine Vorlagen.</p>}
       </div>
     </div>
   );

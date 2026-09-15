@@ -8,7 +8,7 @@ export function ConflictDialog() {
   return (
     <div className="modal-overlay" role="alertdialog" aria-modal="true">
       <div className="modal-panel">
-        <h3>Unterschiedliche Änderungen erkannt</h3>
+        <h2>Unterschiedliche Änderungen erkannt</h2>
         <p>
           Auf einem anderen Gerät wurde zwischenzeitlich ebenfalls gespeichert. Beide Versionen können nicht automatisch zusammengeführt werden — welche soll gelten?
         </p>

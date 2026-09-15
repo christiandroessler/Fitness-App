@@ -170,10 +170,12 @@ export function ExerciseForm({ initial, onSave, onCancel, onDelete }: ExerciseFo
         )}
       </div>
 
-      <label className="checkbox-label">
-        <input type="checkbox" checked={ex.einseitig} onChange={(e) => set('einseitig', e.target.checked)} />
-        Einseitig (je Seite ausgeführt)
-      </label>
+      <button type="button" className="toggle-row" onClick={() => set('einseitig', !ex.einseitig)}>
+        <span>Einseitig (je Seite ausgeführt)</span>
+        <span className={`toggle-track ${ex.einseitig ? 'on' : ''}`}>
+          <span className="toggle-thumb" />
+        </span>
+      </button>
       {ex.einseitig && (
         <label>
           Wechselzeit zwischen den Seiten (s)
@@ -181,20 +183,23 @@ export function ExerciseForm({ initial, onSave, onCancel, onDelete }: ExerciseFo
         </label>
       )}
 
-      <label className="checkbox-label">
-        <input type="checkbox" checked={ex.beinfrei ?? false} onChange={(e) => set('beinfrei', e.target.checked)} />
-        Beinfrei (eignet sich als Füllübung in Kraft-Satzpausen)
-      </label>
+      <button type="button" className="toggle-row" onClick={() => set('beinfrei', !ex.beinfrei)}>
+        <span>Beinfrei (eignet sich als Füllübung in Kraft-Satzpausen)</span>
+        <span className={`toggle-track ${ex.beinfrei ? 'on' : ''}`}>
+          <span className="toggle-thumb" />
+        </span>
+      </button>
 
-      <fieldset className="equipment-fieldset">
-        <legend>Equipment</legend>
-        {AUSWAEHLBARES_EQUIPMENT.map((eq) => (
-          <label key={eq} className="checkbox-label">
-            <input type="checkbox" checked={ex.equipment.includes(eq)} onChange={() => toggleEquipment(eq)} />
-            {EQUIPMENT_LABEL[eq]}
-          </label>
-        ))}
-      </fieldset>
+      <div>
+        <span className="meta-label">Equipment</span>
+        <div className="chip-row" style={{ marginTop: 6 }}>
+          {AUSWAEHLBARES_EQUIPMENT.map((eq) => (
+            <button key={eq} type="button" className={`chip ${ex.equipment.includes(eq) ? 'active' : ''}`} onClick={() => toggleEquipment(eq)}>
+              {EQUIPMENT_LABEL[eq]}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <label>
         Darstellung

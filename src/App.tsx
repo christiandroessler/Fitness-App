@@ -9,16 +9,18 @@ import { TemplatesScreen } from './components/templates/TemplatesScreen';
 import { HistoryScreen } from './components/history/HistoryScreen';
 import { SettingsScreen } from './components/settings/SettingsScreen';
 import { TimerScreen } from './components/timer/TimerScreen';
+import { DiceFive, ListChecks, Barbell, PuzzlePiece, ClockCounterClockwise, SlidersHorizontal, X } from '@phosphor-icons/react';
+import type { Icon } from '@phosphor-icons/react';
 
 type Tab = 'generator' | 'sets' | 'bibliothek' | 'vorlagen' | 'verlauf' | 'einstellungen';
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'generator', label: 'Start', icon: '🎲' },
-  { id: 'sets', label: 'Einheiten', icon: '📋' },
-  { id: 'bibliothek', label: 'Übungen', icon: '🏋' },
-  { id: 'vorlagen', label: 'Vorlagen', icon: '🧩' },
-  { id: 'verlauf', label: 'Verlauf', icon: '🕓' },
-  { id: 'einstellungen', label: 'Mehr', icon: '⚙️' }
+const TABS: { id: Tab; label: string; Icon: Icon }[] = [
+  { id: 'generator', label: 'Start', Icon: DiceFive },
+  { id: 'sets', label: 'Einheiten', Icon: ListChecks },
+  { id: 'bibliothek', label: 'Übungen', Icon: Barbell },
+  { id: 'vorlagen', label: 'Vorlagen', Icon: PuzzlePiece },
+  { id: 'verlauf', label: 'Verlauf', Icon: ClockCounterClockwise },
+  { id: 'einstellungen', label: 'Mehr', Icon: SlidersHorizontal }
 ];
 
 function Shell() {
@@ -34,14 +36,18 @@ function Shell() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <h1>Kraft &amp; Mobility</h1>
+        <div className="brand-mark">
+          <span className="brand-bar" />
+          <span className="brand-bar red" />
+          <h1>Kraft &amp; Mobility</h1>
+        </div>
       </header>
 
       {state.error && (
         <div className="error-banner">
           <span>{state.error}</span>
           <button className="btn-icon" onClick={api.dismissError} aria-label="Meldung schließen">
-            ✕
+            <X size={16} />
           </button>
         </div>
       )}
@@ -57,12 +63,16 @@ function Shell() {
       </main>
 
       <nav className="app-nav">
-        {TABS.map((t) => (
-          <button key={t.id} className={`app-nav-item ${tab === t.id ? 'active' : ''}`} onClick={() => setTab(t.id)}>
-            <span className="app-nav-icon">{t.icon}</span>
-            <span>{t.label}</span>
-          </button>
-        ))}
+        {TABS.map((t) => {
+          const active = tab === t.id;
+          return (
+            <button key={t.id} className={`app-nav-item ${active ? 'active' : ''}`} onClick={() => setTab(t.id)}>
+              <t.Icon size={19} weight={active ? 'fill' : 'regular'} />
+              <span>{t.label}</span>
+              <span className="app-nav-indicator" />
+            </button>
+          );
+        })}
       </nav>
 
       <ConflictDialog />

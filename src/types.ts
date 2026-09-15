@@ -194,6 +194,8 @@ export interface Programmteil {
 export interface Template {
   id: string;
   name: string;
+  /** Kurzbeschreibung für die Generator-Übersicht, optional. */
+  beschreibung?: string;
   programmteile: Programmteil[];
 }
 

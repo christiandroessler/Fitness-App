@@ -3,6 +3,7 @@ import type { TrainingSet } from '../../types';
 import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
 import { SetBuilder, buildLeeresSet } from '../builder/SetBuilder';
 import { formatDuration, exerciseDurationSeconds } from '../../lib/duration';
+import { Plus } from '@phosphor-icons/react';
 
 interface SetsScreenProps {
   onStart: (set: TrainingSet) => void;
@@ -41,20 +42,25 @@ export function SetsScreen({ onStart }: SetsScreenProps) {
     <div className="screen">
       <div className="screen-header">
         <h2>Meine Einheiten</h2>
-        <button className="btn-primary" onClick={() => setEditing('new')}>
-          + Neue Einheit
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span className="screen-header-meta">{data.sets.length} gespeichert</span>
+          <button className="btn-icon" onClick={() => setEditing('new')} aria-label="Neue Einheit">
+            <Plus size={18} />
+          </button>
+        </div>
       </div>
-      <div className="library-list">
+      <div className="list">
         {data.sets.map((set) => {
           const dauer = set.uebungen.reduce((s, u) => s + exerciseDurationSeconds(u), 0);
+          const vorlage = set.vorlageId ? data.templates.find((t) => t.id === set.vorlageId) : undefined;
           return (
             <div key={set.id} className="set-list-item">
-              <button className="library-item" onClick={() => setEditing(set)}>
-                <div className="library-item-info">
+              <button className="list-row" onClick={() => setEditing(set)}>
+                <div className="list-row-info">
                   <strong>{set.name}</strong>
-                  <span>
+                  <span className="list-row-meta">
                     {set.uebungen.length} Übungen · {formatDuration(dauer)}
+                    {vorlage ? ` · aus Vorlage ${vorlage.name}` : ''}
                   </span>
                 </div>
               </button>
