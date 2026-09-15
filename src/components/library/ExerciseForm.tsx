@@ -223,6 +223,16 @@ export function ExerciseForm({ initial, onSave, onCancel, onDelete }: ExerciseFo
         <textarea value={ex.beschreibung ?? ''} onChange={(e) => set('beschreibung', e.target.value)} rows={3} placeholder="Kurzer Technikhinweis" />
       </label>
 
+      <label>
+        Ausführungshinweise (ein Stichpunkt pro Zeile)
+        <textarea
+          value={(ex.hinweise ?? []).join('\n')}
+          onChange={(e) => set('hinweise', e.target.value.split('\n'))}
+          rows={3}
+          placeholder={'Worauf sollte man achten?\nz. B. Rumpfhaltung, Atmung, häufige Fehler'}
+        />
+      </label>
+
       <div className="form-actions">
         <button className="btn-secondary" onClick={onCancel}>
           Abbrechen
@@ -232,7 +242,11 @@ export function ExerciseForm({ initial, onSave, onCancel, onDelete }: ExerciseFo
             Löschen
           </button>
         )}
-        <button className="btn-primary" onClick={() => onSave(ex)} disabled={!ex.name.trim()}>
+        <button
+          className="btn-primary"
+          onClick={() => onSave({ ...ex, hinweise: (ex.hinweise ?? []).map((h) => h.trim()).filter(Boolean) })}
+          disabled={!ex.name.trim()}
+        >
           Speichern
         </button>
       </div>

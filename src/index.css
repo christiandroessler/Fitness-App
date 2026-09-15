@@ -32,6 +32,10 @@ html,
 body,
 #root {
   height: 100%;
+  /* iOS Safari zählt bei 100% die volle Seite inkl. der später eingeblendeten
+     Symbolleisten mit; ohne dvh-Unterstützung bleibt die 100%-Kette als
+     Fallback bestehen. */
+  height: 100dvh;
 }
 
 body {
@@ -73,6 +77,7 @@ a:hover {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   max-width: 640px;
   margin: 0 auto;
 }
@@ -383,6 +388,37 @@ button:disabled {
   border-radius: var(--radius-card);
   box-shadow: 0 0 0 1px var(--border);
   padding: 14px;
+}
+
+/* ---- Belohnungssystem (Wochenziel-Ring, Streak) ---- */
+
+.weekly-ring-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.weekly-ring {
+  width: 84px;
+  height: 84px;
+  flex-shrink: 0;
+}
+.weekly-ring-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.weekly-ring-info strong {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: var(--teal-light);
+  margin-top: 2px;
 }
 
 .list {
@@ -861,6 +897,36 @@ button:disabled {
   gap: 14px;
   padding-top: 20px;
 }
+.timer-result {
+  align-items: center;
+  text-align: center;
+  padding-top: 15vh;
+}
+.timer-result-icon {
+  color: var(--teal);
+  animation: km-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes km-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.timer-result-stat {
+  margin: 0;
+  color: var(--muted-2);
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.timer-result-stat.streak {
+  color: var(--teal-light);
+}
 .timer-gate-list {
   color: var(--muted);
   font-size: 0.88rem;
@@ -953,6 +1019,25 @@ button:disabled {
   color: var(--muted);
   font-size: 0.8rem;
   margin-top: 8px;
+}
+.timer-hints {
+  margin: 10px auto 0;
+  padding: 0;
+  list-style: none;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+.timer-hints li {
+  font-size: 0.76rem;
+  color: var(--muted-2);
+  line-height: 1.4;
+}
+.timer-hints li::before {
+  content: '• ';
+  color: var(--teal);
 }
 .timer-controls {
   display: grid;

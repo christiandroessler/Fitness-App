@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { TrainingSet } from '../../types';
 import { KATEGORIE_LABEL, BEWEGUNGSMUSTER_LABEL } from '../../types';
-import { useAppDataApi } from '../../lib/AppDataContext';
+import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
 import { useTimerPlayer, type TimerPlayer } from './useTimerPlayer';
 import { useWakeLock } from '../../lib/wakeLock';
-import { unlockAudio, setMuted, isMuted } from '../../lib/sound';
+import { unlockAudio, primeSpeech, speakHints, setMuted, isMuted } from '../../lib/sound';
+import { berechneStreak, wochenFortschritt } from '../../lib/streak';
 import { StickFigure } from '../StickFigure';
 import { getPoseFrames } from '../figures/poses';
 import { newId } from '../../lib/id';
-import { SpeakerHigh, SpeakerSlash, SkipForward } from '@phosphor-icons/react';
+import { SpeakerHigh, SpeakerSlash, SkipForward, CheckCircle, Fire } from '@phosphor-icons/react';
 
 interface TimerScreenProps {
   set: TrainingSet;
@@ -61,6 +62,7 @@ export function TimerScreen({ set, onDone }: TimerScreenProps) {
           className="btn-cta"
           onClick={() => {
             unlockAudio();
+            primeSpeech();
             setStarted(true);
           }}
         >
@@ -135,11 +137,70 @@ interface ActivePlayerProps {
 function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wakeLockDenied }: ActivePlayerProps) {
   const player = useTimerPlayer(set, onFinish);
   const [confirmAbort, setConfirmAbort] = useState(false);
+  const { data } = useAppDataState();
 
-  if (result) {
+  const phase = player.phase;
+  const uebung = phase ? set.uebungen[phase.uebungIndex] : null;
+  const zeigtFuellUebung = phase?.art === 'pause' && phase.fuellUebung;
+
+  // Liest die Ausführungshinweise einer Übung genau einmal vor — in der Pause, oder
+  // beim einzigen Arbeitsabschnitt, falls die Übung gar keine Pause hat (z. B. ein
+  // einfacher Halten-Block ohne Wiederholungen).
+  const spokenRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (result || !phase || player.status !== 'laufend') return;
+    const idx = phase.uebungIndex;
+    if (zeigtFuellUebung && phase.fuellUebung) {
+      const key = `fill-${idx}`;
+      if (!spokenRef.current.has(key) && phase.fuellUebung.hinweise?.length) {
+        spokenRef.current.add(key);
+        speakHints(phase.fuellUebung.hinweise);
+      }
+      return;
+    }
+    const key = `main-${idx}`;
+    if (spokenRef.current.has(key)) return;
+    const hints = uebung?.hinweise;
+    if (!hints || hints.length === 0) return;
+    const hatPause = player.phasen.some((ph) => ph.uebungIndex === idx && ph.art === 'pause');
+    const istPassenderMoment = phase.art === 'pause' || (!hatPause && phase.art === 'arbeit');
+    if (istPassenderMoment) {
+      spokenRef.current.add(key);
+      speakHints(hints);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result, phase?.uebungIndex, phase?.art, player.status]);
+
+  if (result === 'abgeschlossen') {
+    const erledigt = wochenFortschritt(data.history);
+    const ziel = data.settings.wochenzielEinheiten ?? 3;
+    const { wochen: streakWochen } = berechneStreak(data.history);
+    return (
+      <div className="timer-gate timer-result">
+        <div className="timer-result-icon">
+          <CheckCircle size={72} weight="fill" />
+        </div>
+        <h2>Einheit abgeschlossen</h2>
+        <p>{set.name}</p>
+        <p className="timer-result-stat">
+          Diese Woche: {erledigt} von {ziel} Einheiten
+        </p>
+        {streakWochen > 0 && (
+          <p className="timer-result-stat streak">
+            <Fire size={16} weight="fill" /> {streakWochen} {streakWochen === 1 ? 'Woche' : 'Wochen'} in Folge
+          </p>
+        )}
+        <button className="btn-cta" onClick={onDone}>
+          Fertig
+        </button>
+      </div>
+    );
+  }
+
+  if (result === 'abgebrochen') {
     return (
       <div className="timer-gate">
-        <h2>{result === 'abgeschlossen' ? 'Einheit abgeschlossen 🎉' : 'Einheit abgebrochen'}</h2>
+        <h2>Einheit abgebrochen</h2>
         <p>{set.name}</p>
         <button className="btn-cta" onClick={onDone}>
           Fertig
@@ -148,15 +209,13 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
     );
   }
 
-  const phase = player.phase;
-  const uebung = phase ? set.uebungen[phase.uebungIndex] : null;
   const frames = uebung?.darstellungsart === 'figur' ? getPoseFrames(uebung.figur_id) : undefined;
   const sekunden = Math.ceil(player.remainingMs / 1000);
   const fortschritt = player.gesamtDauerS > 0 ? Math.min(1, player.vergangeneS / player.gesamtDauerS) : 0;
-  const zeigtFuellUebung = phase?.art === 'pause' && phase.fuellUebung;
   const fuellFrames = zeigtFuellUebung ? getPoseFrames(phase.fuellUebung!.figur_id) : undefined;
   const danachText = baueDanachText(player, set);
   const nochMin = Math.round((player.gesamtDauerS - player.vergangeneS) / 60);
+  const aktiveHinweise = zeigtFuellUebung ? phase.fuellUebung?.hinweise : uebung?.hinweise;
 
   return (
     <div className="timer-screen">
@@ -197,6 +256,13 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
         <p className="timer-phase-label">{phase?.label}</p>
         <div className="timer-countdown">{sekunden}</div>
         {danachText && <p className="timer-next">{danachText}</p>}
+        {aktiveHinweise && aktiveHinweise.length > 0 && (
+          <ul className="timer-hints">
+            {aktiveHinweise.map((hinweis, i) => (
+              <li key={i}>{hinweis}</li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="timer-controls">

@@ -155,6 +155,9 @@ export interface Exercise {
   video_start_s?: number;
   video_ende_s?: number;
   beschreibung?: string;
+  /** Stichpunktartige Ausführungshinweise (Technik/Fehlerquellen), werden im Timer
+   * während der Übung angezeigt und einmalig vorgelesen. */
+  hinweise?: string[];
   /** Progressionskette, optional. */
   stufe_leichter?: string;
   stufe_schwerer?: string;
@@ -218,6 +221,7 @@ export interface SetExercise {
   video_start_s?: number;
   video_ende_s?: number;
   beschreibung?: string;
+  hinweise?: string[];
   /** Füllübung, die in den Satzpausen dieser (Kraft-)Übung eingespielt wird. */
   fuellUebung?: SetExercise;
 }
@@ -254,6 +258,8 @@ export interface AppSettings {
   /** Equipment, das aktuell tatsächlich zur Verfügung steht (7.2: nur damit ausführbare
    * Übungen werden generiert). Standard: alles verfügbar. */
   verfuegbaresEquipment: Equipment[];
+  /** Ziel für den Wochenfortschritts-Ring auf dem Start-Screen (Anzahl Einheiten/Woche). */
+  wochenzielEinheiten: number;
 }
 
 export const ALLE_EQUIPMENT: Equipment[] = [
@@ -287,6 +293,6 @@ export function emptyAppData(): AppData {
     templates: [],
     sets: [],
     history: [],
-    settings: { letzteNGenerator: 2, toeneStumm: false, verfuegbaresEquipment: [...ALLE_EQUIPMENT] }
+    settings: { letzteNGenerator: 2, toeneStumm: false, verfuegbaresEquipment: [...ALLE_EQUIPMENT], wochenzielEinheiten: 3 }
   };
 }

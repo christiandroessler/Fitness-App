@@ -63,3 +63,26 @@ export function playEndTon(): void {
   beep(660, 160, 0);
   beep(990, 220, 0.18);
 }
+
+// Gesprochene Ausführungshinweise (Web Speech API, keine externe Abhängigkeit/Kosten).
+// Folgt demselben Stumm-Schalter wie die Countdown-Töne.
+
+/** Muss synchron aus einem Klick-Handler aufgerufen werden (iOS-Freischaltung,
+ * analog zu unlockAudio() für Web Audio). */
+export function primeSpeech(): void {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(' ');
+  u.volume = 0;
+  window.speechSynthesis.speak(u);
+}
+
+export function speakHints(hinweise: string[]): void {
+  if (muted) return;
+  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  if (hinweise.length === 0) return;
+  const utterance = new SpeechSynthesisUtterance(hinweise.join('. '));
+  utterance.lang = 'de-DE';
+  utterance.rate = 0.95;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}

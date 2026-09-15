@@ -29,7 +29,8 @@ function toSetExercise(ex: Exercise): SetExercise {
     video_datei: ex.video_datei,
     video_start_s: ex.video_start_s,
     video_ende_s: ex.video_ende_s,
-    beschreibung: ex.beschreibung
+    beschreibung: ex.beschreibung,
+    hinweise: ex.hinweise
   };
 }
 

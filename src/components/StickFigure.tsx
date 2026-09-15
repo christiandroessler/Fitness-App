@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Pose } from './figures/poses';
 
-const SHOULDER_HALF_WIDTH = 8;
-const HIP_HALF_WIDTH = 7;
-const HEAD_RADIUS = 7;
+// Körperbreiten der soliden Figur (Schritt 2: "menschlicher" statt Strichmännchen).
+// Gliedmaßen werden als dicke, rundkappige Linien ("Kapseln") gezeichnet — bei
+// gleicher Breite wie ihre Endpunkt-Kreise ergibt das durchgehend weiche Übergänge.
+const SHOULDER_HALF_WIDTH = 10;
+const HIP_HALF_WIDTH = 9;
+const HEAD_RADIUS = 10.5;
+const ARM_WIDTH = 9.5;
+const LEG_WIDTH = 13.5;
+const NECK_WIDTH = 9;
+const EYE_OFFSET = 3.4;
+const EYE_RADIUS = 1.3;
 
 interface Point {
   x: number;
@@ -15,6 +23,8 @@ interface FullPose extends Pose {
   shoulderR: Point;
   hipL: Point;
   hipR: Point;
+  perpX: number;
+  perpY: number;
 }
 
 function lerp(a: number, b: number, t: number): number {
@@ -46,7 +56,9 @@ function derive(pose: Pose): FullPose {
     shoulderL: { x: pose.neck.x - perpX * SHOULDER_HALF_WIDTH, y: pose.neck.y - perpY * SHOULDER_HALF_WIDTH },
     shoulderR: { x: pose.neck.x + perpX * SHOULDER_HALF_WIDTH, y: pose.neck.y + perpY * SHOULDER_HALF_WIDTH },
     hipL: { x: pose.hipC.x - perpX * HIP_HALF_WIDTH, y: pose.hipC.y - perpY * HIP_HALF_WIDTH },
-    hipR: { x: pose.hipC.x + perpX * HIP_HALF_WIDTH, y: pose.hipC.y + perpY * HIP_HALF_WIDTH }
+    hipR: { x: pose.hipC.x + perpX * HIP_HALF_WIDTH, y: pose.hipC.y + perpY * HIP_HALF_WIDTH },
+    perpX,
+    perpY
   };
 }
 
@@ -104,36 +116,57 @@ export interface StickFigureProps {
   mirrored?: boolean;
   active?: boolean;
   periodMs?: number;
-  strokeColor?: string;
+  bodyColor?: string;
   className?: string;
 }
 
-export function StickFigure({ frames, mirrored, active = true, periodMs = 650, strokeColor = 'currentColor', className }: StickFigureProps) {
+export function StickFigure({ frames, mirrored, active = true, periodMs = 650, bodyColor = 'currentColor', className }: StickFigureProps) {
   const animated = useAnimatedPose(frames, active, periodMs);
   const p = derive(animated);
 
-  const line = (a: Point, b: Point) => <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} />;
+  const limb = (a: Point, b: Point, width: number, key: string) => (
+    <line key={key} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={bodyColor} strokeWidth={width} strokeLinecap="round" />
+  );
+  const joint = (pt: Point, width: number, key: string) => <circle key={key} cx={pt.x} cy={pt.y} r={width / 2} fill={bodyColor} />;
+
+  const eyeL = { x: p.head.x - p.perpX * EYE_OFFSET, y: p.head.y - p.perpY * EYE_OFFSET };
+  const eyeR = { x: p.head.x + p.perpX * EYE_OFFSET, y: p.head.y + p.perpY * EYE_OFFSET };
 
   return (
     <svg viewBox="0 0 100 150" className={className} role="img" aria-hidden="true">
-      <g
-        stroke={strokeColor}
-        strokeWidth={4.2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-        transform={mirrored ? 'translate(100,0) scale(-1,1)' : undefined}
-      >
-        <circle cx={p.head.x} cy={p.head.y} r={HEAD_RADIUS} fill="none" />
-        {line(p.neck, p.hipC)}
-        {line(p.shoulderL, p.elbowL)}
-        {line(p.elbowL, p.handL)}
-        {line(p.shoulderR, p.elbowR)}
-        {line(p.elbowR, p.handR)}
-        {line(p.hipL, p.kneeL)}
-        {line(p.kneeL, p.ankleL)}
-        {line(p.hipR, p.kneeR)}
-        {line(p.kneeR, p.ankleR)}
+      <g transform={mirrored ? 'translate(100,0) scale(-1,1)' : undefined}>
+        {/* Rumpf: gefülltes Viereck mit abgerundeten Ecken (Schulter-/Hüftkreise) */}
+        <polygon points={`${p.shoulderL.x},${p.shoulderL.y} ${p.shoulderR.x},${p.shoulderR.y} ${p.hipR.x},${p.hipR.y} ${p.hipL.x},${p.hipL.y}`} fill={bodyColor} />
+        {joint(p.shoulderL, ARM_WIDTH, 'sL')}
+        {joint(p.shoulderR, ARM_WIDTH, 'sR')}
+        {joint(p.hipL, LEG_WIDTH, 'hL')}
+        {joint(p.hipR, LEG_WIDTH, 'hR')}
+
+        {/* Beine */}
+        {limb(p.hipL, p.kneeL, LEG_WIDTH, 'thighL')}
+        {joint(p.kneeL, LEG_WIDTH, 'kneeL')}
+        {limb(p.kneeL, p.ankleL, LEG_WIDTH * 0.85, 'shinL')}
+        {joint(p.ankleL, LEG_WIDTH * 0.85, 'ankleL')}
+        {limb(p.hipR, p.kneeR, LEG_WIDTH, 'thighR')}
+        {joint(p.kneeR, LEG_WIDTH, 'kneeR')}
+        {limb(p.kneeR, p.ankleR, LEG_WIDTH * 0.85, 'shinR')}
+        {joint(p.ankleR, LEG_WIDTH * 0.85, 'ankleR')}
+
+        {/* Arme */}
+        {limb(p.shoulderL, p.elbowL, ARM_WIDTH, 'upperL')}
+        {joint(p.elbowL, ARM_WIDTH * 0.85, 'elbowL')}
+        {limb(p.elbowL, p.handL, ARM_WIDTH * 0.85, 'forearmL')}
+        {joint(p.handL, ARM_WIDTH * 0.85, 'handL')}
+        {limb(p.shoulderR, p.elbowR, ARM_WIDTH, 'upperR')}
+        {joint(p.elbowR, ARM_WIDTH * 0.85, 'elbowR')}
+        {limb(p.elbowR, p.handR, ARM_WIDTH * 0.85, 'forearmR')}
+        {joint(p.handR, ARM_WIDTH * 0.85, 'handR')}
+
+        {/* Hals + Kopf */}
+        {limb(p.neck, p.head, NECK_WIDTH, 'neck')}
+        <circle cx={p.head.x} cy={p.head.y} r={HEAD_RADIUS} fill={bodyColor} />
+        <circle cx={eyeL.x} cy={eyeL.y} r={EYE_RADIUS} fill="var(--bg, #161826)" opacity={0.55} />
+        <circle cx={eyeR.x} cy={eyeR.y} r={EYE_RADIUS} fill="var(--bg, #161826)" opacity={0.55} />
       </g>
     </svg>
   );
