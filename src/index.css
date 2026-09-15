@@ -420,6 +420,9 @@ button:disabled {
   color: var(--teal-light);
   margin-top: 2px;
 }
+.streak-badge.inactive {
+  color: var(--muted);
+}
 
 .list {
   display: flex;
@@ -943,6 +946,7 @@ button:disabled {
   z-index: 30;
   max-width: 640px;
   margin: 0 auto;
+  overflow-y: auto;
 }
 .timer-meta-row {
   display: flex;
@@ -973,7 +977,7 @@ button:disabled {
   text-align: center;
 }
 .timer-figure {
-  flex: 1;
+  flex: 0 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -985,7 +989,8 @@ button:disabled {
 }
 .timer-figure svg {
   height: 100%;
-  max-height: 40vh;
+  max-height: 26vh;
+  max-height: 26dvh;
 }
 .timer-figure-fallback {
   text-align: center;
@@ -1041,7 +1046,7 @@ button:disabled {
 }
 .timer-controls {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto auto 1fr auto;
   gap: 10px;
   align-items: stretch;
   flex-shrink: 0;
