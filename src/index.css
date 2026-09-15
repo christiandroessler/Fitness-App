@@ -959,6 +959,25 @@ button:disabled {
   font-size: 0.8rem;
   margin-top: 8px;
 }
+.timer-hints {
+  margin: 10px auto 0;
+  padding: 0;
+  list-style: none;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+.timer-hints li {
+  font-size: 0.76rem;
+  color: var(--muted-2);
+  line-height: 1.4;
+}
+.timer-hints li::before {
+  content: '• ';
+  color: var(--teal);
+}
 .timer-controls {
   display: grid;
   grid-template-columns: auto 1fr auto;

@@ -155,6 +155,9 @@ export interface Exercise {
   video_start_s?: number;
   video_ende_s?: number;
   beschreibung?: string;
+  /** Stichpunktartige Ausführungshinweise (Technik/Fehlerquellen), werden im Timer
+   * während der Übung angezeigt und einmalig vorgelesen. */
+  hinweise?: string[];
   /** Progressionskette, optional. */
   stufe_leichter?: string;
   stufe_schwerer?: string;
@@ -218,6 +221,7 @@ export interface SetExercise {
   video_start_s?: number;
   video_ende_s?: number;
   beschreibung?: string;
+  hinweise?: string[];
   /** Füllübung, die in den Satzpausen dieser (Kraft-)Übung eingespielt wird. */
   fuellUebung?: SetExercise;
 }

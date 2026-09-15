@@ -16,6 +16,7 @@ import type {
   HaltenParameter,
   IsometrieSerieParameter
 } from '../types';
+import { EXERCISE_HINWEISE } from './exerciseHints';
 
 const iv = (arbeit_s: number, pause_s: number, anzahl: number): IntervallParameter => ({
   art: 'intervall',
@@ -83,7 +84,7 @@ function ex(o: ExerciseInput): Exercise {
   };
 }
 
-export const STARTBIBLIOTHEK: Exercise[] = [
+const ROH_STARTBIBLIOTHEK: Exercise[] = [
   // A.3 Erwärmung (Raise)
   ex({ id: 'ERW-01', name: 'Hampelmann', kategorie: 'erwaermung', bewegungsmuster: 'keins', parameter: iv(30, 15, 2), einseitig: false, equipment: [], figur_id: 'fig-jumping-jack', beschreibung: 'Locker und rhythmisch, Arme und Beine gleichzeitig öffnen und schließen.' }),
   ex({ id: 'ERW-02', name: 'Laufen auf der Stelle', kategorie: 'erwaermung', bewegungsmuster: 'keins', parameter: iv(30, 15, 2), einseitig: false, equipment: [], figur_id: 'fig-run-in-place', beschreibung: 'Lockeres Traben auf der Stelle, Arme leicht mitschwingen lassen.' }),
@@ -197,6 +198,8 @@ export const STARTBIBLIOTHEK: Exercise[] = [
   ex({ id: 'BEW-08', name: 'Wadendehnung an der Wand', kategorie: 'beweglichkeit', bewegungsmuster: 'mobility', parameter: halten(45), einseitig: true, equipment: ['wand'], figur_id: 'fig-calf-stretch', beschreibung: 'Hinteres Bein gestreckt, Ferse am Boden, Becken zur Wand schieben.' }),
   ex({ id: 'BEW-09', name: 'Kindhaltung mit seitlicher Verlagerung', kategorie: 'beweglichkeit', bewegungsmuster: 'mobility', parameter: halten(45), einseitig: true, equipment: [], figur_id: 'fig-childs-pose', beschreibung: 'Aus der Kindhaltung die Hände seitlich versetzen, um die Flanke mitzudehnen.' })
 ];
+
+export const STARTBIBLIOTHEK: Exercise[] = ROH_STARTBIBLIOTHEK.map((ex) => ({ ...ex, hinweise: EXERCISE_HINWEISE[ex.id] }));
 
 export function findExercise(id: string): Exercise | undefined {
   return STARTBIBLIOTHEK.find((e) => e.id === id);
