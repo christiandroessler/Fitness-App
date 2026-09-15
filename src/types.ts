@@ -258,6 +258,8 @@ export interface AppSettings {
   /** Equipment, das aktuell tatsächlich zur Verfügung steht (7.2: nur damit ausführbare
    * Übungen werden generiert). Standard: alles verfügbar. */
   verfuegbaresEquipment: Equipment[];
+  /** Ziel für den Wochenfortschritts-Ring auf dem Start-Screen (Anzahl Einheiten/Woche). */
+  wochenzielEinheiten: number;
 }
 
 export const ALLE_EQUIPMENT: Equipment[] = [
@@ -291,6 +293,6 @@ export function emptyAppData(): AppData {
     templates: [],
     sets: [],
     history: [],
-    settings: { letzteNGenerator: 2, toeneStumm: false, verfuegbaresEquipment: [...ALLE_EQUIPMENT] }
+    settings: { letzteNGenerator: 2, toeneStumm: false, verfuegbaresEquipment: [...ALLE_EQUIPMENT], wochenzielEinheiten: 3 }
   };
 }

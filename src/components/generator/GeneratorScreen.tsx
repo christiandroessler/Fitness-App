@@ -4,6 +4,8 @@ import { KATEGORIE_LABEL } from '../../types';
 import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
 import { generateEinheit } from '../../lib/generator';
 import { SetBuilder } from '../builder/SetBuilder';
+import { WeeklyRing } from '../rewards/WeeklyRing';
+import { berechneStreak, wochenFortschritt } from '../../lib/streak';
 import { Warning } from '@phosphor-icons/react';
 
 interface GeneratorScreenProps {
@@ -66,8 +68,13 @@ export function GeneratorScreen({ onStart }: GeneratorScreenProps) {
     );
   }
 
+  const erledigt = wochenFortschritt(data.history);
+  const { wochen: streakWochen } = berechneStreak(data.history);
+
   return (
     <div className="screen">
+      <WeeklyRing erledigt={erledigt} ziel={data.settings.wochenzielEinheiten ?? 3} streakWochen={streakWochen} />
+
       <div className="screen-header">
         <span className="meta-label">Vorlage</span>
       </div>

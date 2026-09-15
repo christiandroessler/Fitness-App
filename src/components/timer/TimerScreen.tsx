@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import type { TrainingSet } from '../../types';
 import { KATEGORIE_LABEL, BEWEGUNGSMUSTER_LABEL } from '../../types';
-import { useAppDataApi } from '../../lib/AppDataContext';
+import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
 import { useTimerPlayer, type TimerPlayer } from './useTimerPlayer';
 import { useWakeLock } from '../../lib/wakeLock';
 import { unlockAudio, primeSpeech, speakHints, setMuted, isMuted } from '../../lib/sound';
+import { berechneStreak, wochenFortschritt } from '../../lib/streak';
 import { StickFigure } from '../StickFigure';
 import { getPoseFrames } from '../figures/poses';
 import { newId } from '../../lib/id';
-import { SpeakerHigh, SpeakerSlash, SkipForward } from '@phosphor-icons/react';
+import { SpeakerHigh, SpeakerSlash, SkipForward, CheckCircle, Fire } from '@phosphor-icons/react';
 
 interface TimerScreenProps {
   set: TrainingSet;
@@ -136,6 +137,7 @@ interface ActivePlayerProps {
 function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wakeLockDenied }: ActivePlayerProps) {
   const player = useTimerPlayer(set, onFinish);
   const [confirmAbort, setConfirmAbort] = useState(false);
+  const { data } = useAppDataState();
 
   const phase = player.phase;
   const uebung = phase ? set.uebungen[phase.uebungIndex] : null;
@@ -169,10 +171,36 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, phase?.uebungIndex, phase?.art, player.status]);
 
-  if (result) {
+  if (result === 'abgeschlossen') {
+    const erledigt = wochenFortschritt(data.history);
+    const ziel = data.settings.wochenzielEinheiten ?? 3;
+    const { wochen: streakWochen } = berechneStreak(data.history);
+    return (
+      <div className="timer-gate timer-result">
+        <div className="timer-result-icon">
+          <CheckCircle size={72} weight="fill" />
+        </div>
+        <h2>Einheit abgeschlossen</h2>
+        <p>{set.name}</p>
+        <p className="timer-result-stat">
+          Diese Woche: {erledigt} von {ziel} Einheiten
+        </p>
+        {streakWochen > 0 && (
+          <p className="timer-result-stat streak">
+            <Fire size={16} weight="fill" /> {streakWochen} {streakWochen === 1 ? 'Woche' : 'Wochen'} in Folge
+          </p>
+        )}
+        <button className="btn-cta" onClick={onDone}>
+          Fertig
+        </button>
+      </div>
+    );
+  }
+
+  if (result === 'abgebrochen') {
     return (
       <div className="timer-gate">
-        <h2>{result === 'abgeschlossen' ? 'Einheit abgeschlossen 🎉' : 'Einheit abgebrochen'}</h2>
+        <h2>Einheit abgebrochen</h2>
         <p>{set.name}</p>
         <button className="btn-cta" onClick={onDone}>
           Fertig

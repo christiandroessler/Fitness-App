@@ -142,6 +142,21 @@ export function SettingsScreen() {
           />
         </label>
       </div>
+
+      <div className="card settings-section">
+        <h3>Wochenziel</h3>
+        <p className="settings-hint">Steuert den Fortschritts-Ring auf dem Start-Screen.</p>
+        <label>
+          Einheiten pro Woche
+          <input
+            type="number"
+            min={1}
+            max={14}
+            value={state.data.settings.wochenzielEinheiten ?? 3}
+            onChange={(e) => api.mutate((d) => ({ ...d, settings: { ...d.settings, wochenzielEinheiten: Number(e.target.value) } }))}
+          />
+        </label>
+      </div>
     </div>
   );
 }
