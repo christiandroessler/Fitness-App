@@ -23,6 +23,7 @@ interface ExerciseFormProps {
 }
 
 export function ExerciseForm({ initial, onSave, onCancel, onDelete }: ExerciseFormProps) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [ex, setEx] = useState<Exercise>(
     initial ?? {
       id: newId('ex'),
@@ -233,23 +234,35 @@ export function ExerciseForm({ initial, onSave, onCancel, onDelete }: ExerciseFo
         />
       </label>
 
-      <div className="form-actions">
-        <button className="btn-secondary" onClick={onCancel}>
-          Abbrechen
-        </button>
-        {onDelete && (
+      {confirmDelete ? (
+        <div className="confirm-box">
+          <p>Übung „{ex.name}" wirklich löschen?</p>
           <button className="btn-danger" onClick={onDelete}>
-            Löschen
+            Ja, löschen
           </button>
-        )}
-        <button
-          className="btn-primary"
-          onClick={() => onSave({ ...ex, hinweise: (ex.hinweise ?? []).map((h) => h.trim()).filter(Boolean) })}
-          disabled={!ex.name.trim()}
-        >
-          Speichern
-        </button>
-      </div>
+          <button className="btn-secondary" onClick={() => setConfirmDelete(false)}>
+            Abbrechen
+          </button>
+        </div>
+      ) : (
+        <div className="form-actions">
+          <button className="btn-secondary" onClick={onCancel}>
+            Abbrechen
+          </button>
+          {onDelete && (
+            <button className="btn-danger" onClick={() => setConfirmDelete(true)}>
+              Löschen
+            </button>
+          )}
+          <button
+            className="btn-primary"
+            onClick={() => onSave({ ...ex, hinweise: (ex.hinweise ?? []).map((h) => h.trim()).filter(Boolean) })}
+            disabled={!ex.name.trim()}
+          >
+            Speichern
+          </button>
+        </div>
+      )}
     </div>
   );
 }

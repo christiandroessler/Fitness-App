@@ -17,11 +17,41 @@
   --red: #e5495b;
   --red-light: #f0a7b0;
   --red-tint-14: rgba(229, 73, 91, 0.14);
+  --nav-bg: #12141f;
+  --warn: #facc15;
+  --warn-soft: #fde68a;
+  --warn-tint-10: rgba(250, 204, 21, 0.1);
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --radius-card: 8px;
   --radius-lg: 14px;
   --radius-pill: 999px;
+}
+
+/* Helles Design (Umschaltung in den Einstellungen) — gleiche zwei Akzentfarben
+   (Teal/Rot), nur die Basis-Tokens werden invertiert. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --surface-2: #eceef3;
+  --border: #dfe1e8;
+  --border-strong: #c3c6d1;
+  --text: #1a1c27;
+  --muted: #676b80;
+  --muted-2: #454859;
+  --teal: #1f8a86;
+  --teal-light: #0f6b67;
+  --teal-tint-08: rgba(31, 138, 134, 0.08);
+  --teal-tint-12: rgba(31, 138, 134, 0.12);
+  --teal-tint-25: rgba(31, 138, 134, 0.25);
+  --red: #c22e40;
+  --red-light: #98202f;
+  --red-tint-14: rgba(194, 46, 64, 0.14);
+  --nav-bg: #ffffff;
+  --warn: #b45309;
+  --warn-soft: #7c4a12;
+  --warn-tint-10: rgba(180, 83, 9, 0.1);
 }
 
 * {
@@ -130,7 +160,7 @@ a:hover {
 .app-nav {
   display: flex;
   border-top: 1px solid var(--border);
-  background: #12141f;
+  background: var(--nav-bg);
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 .app-nav-item {
@@ -875,12 +905,12 @@ button:disabled {
 }
 
 .warning-box {
-  background: rgba(250, 204, 21, 0.1);
-  border: 1px solid #facc15;
+  background: var(--warn-tint-10);
+  border: 1px solid var(--warn);
   border-radius: var(--radius-card);
   padding: 8px 12px;
   font-size: 0.82rem;
-  color: #fde68a;
+  color: var(--warn-soft);
 }
 .warning-box p {
   margin: 4px 0;
@@ -969,8 +999,8 @@ button:disabled {
   transition: width 0.2s linear;
 }
 .timer-hint {
-  background: rgba(250, 204, 21, 0.12);
-  color: #facc15;
+  background: var(--warn-tint-10);
+  color: var(--warn);
   font-size: 0.78rem;
   padding: 6px 10px;
   border-radius: var(--radius-card);
@@ -1052,7 +1082,7 @@ button:disabled {
   align-items: stretch;
   flex-shrink: 0;
 }
-.timer-abort-confirm {
+.confirm-box {
   display: flex;
   flex-direction: column;
   gap: 8px;

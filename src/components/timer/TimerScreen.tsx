@@ -287,7 +287,7 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
       </div>
 
       {confirmAbort ? (
-        <div className="timer-abort-confirm">
+        <div className="confirm-box">
           <p>Einheit wirklich abbrechen?</p>
           <button className="btn-danger" onClick={player.abort}>
             Ja, abbrechen
