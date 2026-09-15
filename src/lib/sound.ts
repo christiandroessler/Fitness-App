@@ -80,8 +80,11 @@ function sprich(hinweise: string[]): void {
   const utterance = new SpeechSynthesisUtterance(hinweise.join('. '));
   utterance.lang = 'de-DE';
   utterance.rate = 0.95;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utterance);
+  if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+    window.speechSynthesis.cancel();
+  }
+  // iOS Safari verschluckt speak(), wenn es im selben Tick direkt auf cancel() folgt.
+  setTimeout(() => window.speechSynthesis.speak(utterance), 50);
 }
 
 export function speakHints(hinweise: string[]): void {
