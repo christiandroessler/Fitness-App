@@ -24,6 +24,7 @@ export interface TimerPlayer {
   pause: () => void;
   resume: () => void;
   skip: () => void;
+  back: () => void;
   abort: () => void;
 }
 
@@ -127,6 +128,19 @@ export function useTimerPlayer(set: TrainingSet, onFinish: (erreichterUebungInde
     goToPhase(next);
   }, [phasen, goToPhase]);
 
+  /** Springt zum Anfang der aktuellen Übung zurück — oder, falls dort bereits
+   * gestartet, zum Anfang der vorherigen Übung (wie "Zurück" an einem Musikplayer). */
+  const back = useCallback(() => {
+    const currentUebungIndex = phasen[stateRef.current.phaseIndex]?.uebungIndex ?? 0;
+    const startOfCurrent = phasen.findIndex((p) => p.uebungIndex === currentUebungIndex);
+    if (stateRef.current.phaseIndex > startOfCurrent) {
+      goToPhase(startOfCurrent);
+      return;
+    }
+    const startOfPrev = phasen.findIndex((p) => p.uebungIndex === currentUebungIndex - 1);
+    goToPhase(startOfPrev >= 0 ? startOfPrev : startOfCurrent);
+  }, [phasen, goToPhase]);
+
   const abort = useCallback(() => finishSession('abgebrochen'), [finishSession]);
 
   const gesamtDauerS = phasen.reduce((sum, p) => sum + p.dauer_s, 0);
@@ -144,6 +158,7 @@ export function useTimerPlayer(set: TrainingSet, onFinish: (erreichterUebungInde
     pause,
     resume,
     skip,
+    back,
     abort
   };
 }

@@ -76,13 +76,23 @@ export function primeSpeech(): void {
   window.speechSynthesis.speak(u);
 }
 
-export function speakHints(hinweise: string[]): void {
-  if (muted) return;
-  if (typeof window === 'undefined' || !window.speechSynthesis) return;
-  if (hinweise.length === 0) return;
+function sprich(hinweise: string[]): void {
   const utterance = new SpeechSynthesisUtterance(hinweise.join('. '));
   utterance.lang = 'de-DE';
   utterance.rate = 0.95;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utterance);
+}
+
+export function speakHints(hinweise: string[]): void {
+  if (muted) return;
+  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  if (hinweise.length === 0) return;
+  // Manche Browser melden direkt nach dem Laden noch keine Stimmen (leeres
+  // getVoices()) — ohne Nachladen bliebe speak() dann lautlos.
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.addEventListener('voiceschanged', () => sprich(hinweise), { once: true });
+    return;
+  }
+  sprich(hinweise);
 }

@@ -41,12 +41,10 @@ export function WeeklyRing({ erledigt, ziel, streakWochen }: WeeklyRingProps) {
         <strong>
           {erledigt} von {ziel} Einheiten
         </strong>
-        {streakWochen > 0 && (
-          <span className="streak-badge">
-            <Fire size={16} weight="fill" />
-            {streakWochen} {streakWochen === 1 ? 'Woche' : 'Wochen'} in Folge
-          </span>
-        )}
+        <span className={`streak-badge ${streakWochen === 0 ? 'inactive' : ''}`}>
+          <Fire size={16} weight={streakWochen > 0 ? 'fill' : 'regular'} />
+          {streakWochen > 0 ? `${streakWochen} ${streakWochen === 1 ? 'Woche' : 'Wochen'} in Folge` : 'Starte deine Serie'}
+        </span>
       </div>
     </div>
   );

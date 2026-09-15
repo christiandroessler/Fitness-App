@@ -9,7 +9,7 @@ import { berechneStreak, wochenFortschritt } from '../../lib/streak';
 import { StickFigure } from '../StickFigure';
 import { getPoseFrames } from '../figures/poses';
 import { newId } from '../../lib/id';
-import { SpeakerHigh, SpeakerSlash, SkipForward, CheckCircle, Fire } from '@phosphor-icons/react';
+import { SpeakerHigh, SpeakerSlash, SkipForward, SkipBack, CheckCircle, Fire } from '@phosphor-icons/react';
 
 interface TimerScreenProps {
   set: TrainingSet;
@@ -235,14 +235,14 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
       <div className="timer-figure">
         {zeigtFuellUebung && phase.fuellUebung ? (
           fuellFrames ? (
-            <StickFigure frames={fuellFrames} />
+            <StickFigure frames={fuellFrames} active={player.status === 'laufend'} />
           ) : (
             <div className="timer-figure-fallback">
               <strong>{phase.fuellUebung.name}</strong>
             </div>
           )
         ) : frames ? (
-          <StickFigure frames={frames} mirrored={phase?.seite === 'R'} active={player.status === 'laufend'} />
+          <StickFigure frames={frames} mirrored={phase?.seite === 'R'} active={player.status === 'laufend' && phase?.art !== 'pause'} />
         ) : (
           <div className="timer-figure-fallback">
             <strong>{uebung?.name}</strong>
@@ -268,6 +268,9 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
       <div className="timer-controls">
         <button className="btn-icon" onClick={onToggleMute} aria-label="Ton stumm/ein">
           {muted ? <SpeakerSlash size={19} /> : <SpeakerHigh size={19} />}
+        </button>
+        <button className="btn-icon" onClick={player.back} aria-label="Zurück zur vorherigen Übung">
+          <SkipBack size={19} />
         </button>
         {player.status === 'laufend' ? (
           <button className="btn-primary btn-huge" onClick={player.pause}>
