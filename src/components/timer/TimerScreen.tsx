@@ -7,6 +7,7 @@ import { useWakeLock } from '../../lib/wakeLock';
 import { unlockAudio, primeSpeech, speakHints, setMuted, isMuted } from '../../lib/sound';
 import { berechneStreak, wochenFortschritt } from '../../lib/streak';
 import { StickFigure } from '../StickFigure';
+import { ExerciseVideo } from '../ExerciseVideo';
 import { getPoseFrames } from '../figures/poses';
 import { newId } from '../../lib/id';
 import { SpeakerHigh, SpeakerSlash, SkipForward, SkipBack, CheckCircle, Fire } from '@phosphor-icons/react';
@@ -241,6 +242,8 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
               <strong>{phase.fuellUebung.name}</strong>
             </div>
           )
+        ) : uebung?.darstellungsart === 'video' && uebung.videoPfad ? (
+          <ExerciseVideo pfad={uebung.videoPfad} active={player.status === 'laufend' && phase?.art !== 'pause'} />
         ) : frames ? (
           <StickFigure frames={frames} mirrored={phase?.seite === 'R'} active={player.status === 'laufend' && phase?.art !== 'pause'} />
         ) : (

@@ -91,6 +91,7 @@ function toSetExercise(ex: Exercise, parameterOverride?: Exercise['parameter'], 
     video_datei: ex.video_datei,
     video_start_s: ex.video_start_s,
     video_ende_s: ex.video_ende_s,
+    videoPfad: ex.videoPfad,
     beschreibung: ex.beschreibung,
     hinweise: ex.hinweise,
     fuellUebung

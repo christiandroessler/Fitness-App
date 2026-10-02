@@ -154,6 +154,9 @@ export interface Exercise {
   video_datei?: DriveFileRef;
   video_start_s?: number;
   video_ende_s?: number;
+  /** Mitgeliefertes Video für Standardübungen (App-Asset, Pfad relativ zu `public/`) —
+   * anders als `video_datei` (Lastenheft 1b: eigenes, in Drive hochgeladenes Video). */
+  videoPfad?: string;
   beschreibung?: string;
   /** Stichpunktartige Ausführungshinweise (Technik/Fehlerquellen), werden im Timer
    * während der Übung angezeigt und einmalig vorgelesen. */
@@ -220,6 +223,7 @@ export interface SetExercise {
   video_datei?: DriveFileRef;
   video_start_s?: number;
   video_ende_s?: number;
+  videoPfad?: string;
   beschreibung?: string;
   hinweise?: string[];
   /** Füllübung, die in den Satzpausen dieser (Kraft-)Übung eingespielt wird. */
