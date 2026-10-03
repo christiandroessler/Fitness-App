@@ -1023,11 +1023,16 @@ button:disabled {
   height: 100%;
   max-width: 100%;
 }
+.timer-figure-video {
+  height: 42vh;
+  height: 42dvh;
+  min-height: 260px;
+}
 .timer-video {
   height: 100%;
   width: 100%;
   max-width: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: var(--radius-lg);
 }
 .timer-figure-fallback {
