@@ -51,4 +51,28 @@ describe('backfillHinweise', () => {
     expect(result.sets[0].uebungen[0].hinweise).toEqual(REFERENZ.hinweise);
     expect(result.sets[0].uebungen[0].fuellUebung?.hinweise).toEqual(REFERENZ.hinweise);
   });
+
+  it('trägt bei Altdaten die Video-Darstellung für das Armkreisen nach (statt der alten Figur)', () => {
+    const armkreisen = STARTBIBLIOTHEK.find((ex) => ex.id === 'ERW-05')!;
+    const data = { ...emptyAppData(), exercises: [{ ...armkreisen, darstellungsart: 'figur' as const, figur_id: 'fig-arm-circle', videoPfad: undefined }] };
+    const result = backfillHinweise(data);
+    expect(result.exercises[0].darstellungsart).toBe('video');
+    expect(result.exercises[0].videoPfad).toBe(armkreisen.videoPfad);
+  });
+
+  it('lässt eine bereits auf Video migrierte Übung unangetastet', () => {
+    const armkreisen = STARTBIBLIOTHEK.find((ex) => ex.id === 'ERW-05')!;
+    const data = { ...emptyAppData(), exercises: [armkreisen] };
+    const result = backfillHinweise(data);
+    expect(result.exercises[0]).toEqual(armkreisen);
+  });
+
+  it('trägt die Video-Darstellung auch in bereits gespeicherten Sets nach', () => {
+    const uebung = alsSetExercise({ exerciseId: 'ERW-05', darstellungsart: 'figur', figur_id: 'fig-arm-circle', videoPfad: undefined });
+    const data = { ...emptyAppData(), sets: [{ id: 'set-1', name: 'Set', uebungen: [uebung], ersteller: 'ich' as const, sichtbarkeit: 'privat' as const, erstelltAm: '', geaendertAm: '' }] };
+    const result = backfillHinweise(data);
+    const armkreisen = STARTBIBLIOTHEK.find((ex) => ex.id === 'ERW-05')!;
+    expect(result.sets[0].uebungen[0].darstellungsart).toBe('video');
+    expect(result.sets[0].uebungen[0].videoPfad).toBe(armkreisen.videoPfad);
+  });
 });
