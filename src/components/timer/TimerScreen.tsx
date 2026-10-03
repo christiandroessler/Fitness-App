@@ -233,7 +233,7 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
 
       {wakeLockDenied && <div className="timer-hint">Bildschirm-Sperre nicht möglich — das Display kann sich abschalten.</div>}
 
-      <div className="timer-figure">
+      <div className={`timer-figure ${uebung?.darstellungsart === 'video' && uebung.videoPfad && !zeigtFuellUebung ? 'timer-figure-video' : ''}`}>
         {zeigtFuellUebung && phase.fuellUebung ? (
           fuellFrames ? (
             <StickFigure frames={fuellFrames} active={player.status === 'laufend'} />
