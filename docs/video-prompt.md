@@ -111,8 +111,8 @@ Der Titel im Intro ersetzt Kopfzeile und Schlagzeile: Übungsname groß (72 px, 
   - ARBEIT: 1–2 Technik-Hinweise, über die Phase verteilt; bei langen Phasen (> 30 s) ein dritter kurzer Motivationssatz erlaubt
   - PAUSE: „Pause, locker lassen.“ plus Vorschau auf das, was als Nächstes kommt
   - WECHSEL: „Seitenwechsel – jetzt die rechte Seite.“
-  - Abschluss: „Sauber gemacht!“ (VIDEO-TYP ÜBUNG) bzw. „Satz geschafft. Pause.“ (VIDEO-TYP SATZ)
-- **Timing:** Jede Ansage liegt vollständig innerhalb ihrer Phase, beginnt frühestens 0,3 s nach Phasenbeginn (Intro: 0,1 s) und endet spätestens 3 s vor Phasenende (dort piept die App). Ausnahme: „Los!“ und „Sauber gemacht!“.
+  - Abschluss: VIDEO-TYP ÜBUNG ohne Ansage („Sauber gemacht!“ wird nur eingeblendet, nicht gesprochen); VIDEO-TYP SATZ „Satz geschafft. Pause.“
+- **Timing:** Jede Ansage liegt vollständig innerhalb ihrer Phase, beginnt frühestens 0,3 s nach Phasenbeginn (Intro: 0,1 s) und endet spätestens 3 s vor Phasenende (dort piept die App). Ausnahme: „Los!“.
 - **Kurze Phasen (≤ 6 s):** höchstens ein Wort oder ein ganz kurzer Satz („Pause.“, „Locker.“), sonst keine Ansage. Lieber weglassen als in die Pieptöne hineinsprechen.
 - Untertitel zeigen exakt den gesprochenen Text, synchron, bis 0,3 s nach Satzende.
 
@@ -127,7 +127,7 @@ Der Titel im Intro ersetzt Kopfzeile und Schlagzeile: Übungsname groß (72 px, 
 - [ ] Jede Phasengrenze im Video liegt auf der Sekunde aus dem Zeitplan
 - [ ] In PAUSE-Phasen führt die Figur die Übung nicht aus
 - [ ] Keine Überlappung von Figur, Zähler und Untertiteln
-- [ ] Keine Ansage in den letzten 3 s einer Phase (außer „Los!“/„Sauber gemacht!“)
+- [ ] Keine Ansage in den letzten 3 s einer Phase (außer „Los!“); „Sauber gemacht!“ nicht gesprochen
 - [ ] Keine Musik, keine Pieptöne
 - [ ] Nur SATZ: keine Satznummern, letztes Bild ist eine ruhige Pausenhaltung ohne Effekte
 - [ ] Farben, Schrift, Figur und Stimme wie vorgegeben
