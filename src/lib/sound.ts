@@ -87,6 +87,11 @@ function sprich(hinweise: string[]): void {
   setTimeout(() => window.speechSynthesis.speak(utterance), 50);
 }
 
+export function stopSpeech(): void {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+}
+
 export function speakHints(hinweise: string[]): void {
   if (muted) return;
   if (typeof window === 'undefined' || !window.speechSynthesis) return;

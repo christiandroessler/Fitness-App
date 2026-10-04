@@ -7,7 +7,7 @@ export const EXERCISE_HINWEISE: Record<string, string[]> = {
   'ERW-02': ['Kurze, lockere Schritte', 'Arme entspannt mitschwingen', 'Aufrechte Haltung, Blick nach vorn'],
   'ERW-03': ['Knie bis zur Hüfte anheben, nicht höher erzwingen', 'Oberkörper bleibt aufrecht', 'Gleichmäßiges Tempo auf beiden Seiten'],
   'ERW-04': ['Ferse locker Richtung Gesäß führen, nicht reißen', 'Oberkörper ruhig halten', 'Kleine, schnelle Schritte'],
-  'ERW-05': ['Große, kontrollierte statt kleiner hektischer Kreise', 'Schultern bleiben unten, nicht hochziehen', 'Nach 10 s Richtung wechseln'],
+  'ERW-05': ['Große, kontrollierte statt kleiner hektischer Kreise', 'Schultern bleiben unten, nicht hochziehen', 'In der Pause Richtung wechseln: erst vorwärts, dann rückwärts'],
   'ERW-06': ['Hüfte bleibt locker und beweglich', 'Blick nach vorn, nicht auf die Füße schauen', 'Kontrolliertes Tempo, nicht stolpern'],
 
   // A.4 Aktivierung
