@@ -1,6 +1,6 @@
 # Master-Prompt für Übungsvideos
 
-**So benutzt du ihn:** Alles ab „PROMPT BEGINNT“ bis „PROMPT ENDET“ kopieren und das Datenblatt **einer** Übung aus `video-datenblaetter.md` an der markierten Stelle einfügen. Ein Video pro Durchgang. Die Stilvorlage `public/videos/armkreisen-coach-60s.mp4` mitgeben, falls das Tool Anhänge annimmt.
+**So benutzt du ihn:** Für jede Übung gibt es ein Datenblatt mit VIDEO-TYP ÜBUNG (ganze Übung) oder SATZ (ein Kraftsatz). Alles ab „PROMPT BEGINNT“ bis „PROMPT ENDET“ kopieren und das Datenblatt **einer** Übung aus `video-datenblaetter.md` an der markierten Stelle einfügen. Ein Video pro Durchgang. Die Stilvorlage `public/videos/armkreisen-coach-60s.mp4` mitgeben, falls das Tool Anhänge annimmt.
 
 Einmalig ausfüllen: die Zeile **Stimme** (Name/ID der Stimme aus dem Armkreisen-Video), damit alle Videos gleich klingen.
 
@@ -28,6 +28,16 @@ Du erstellst ein animiertes Anleitungsvideo für eine Übung einer Trainings-App
 - **WECHSEL** (Seitenwechsel bei einseitigen Übungen): Die Figur wechselt in die Ausgangsposition der anderen Seite.
 - Die App hat **keine Vorbereitungszeit** vor der ersten Arbeitsphase. Deshalb gehören Titel und Aufstell-Anweisung in die **ersten höchstens 5 s der ersten ARBEIT-Phase**; danach „Los!“ und Bewegung. Kein Countdown im Intro.
 - Wiederholungs-Zähler und Bewegungstempo so wählen, dass die letzte Wiederholung **genau mit dem Phasenende** fertig ist.
+
+### Zusatzregeln für VIDEO-TYP SATZ
+
+Das Datenblatt nennt den Video-Typ. Bei **SATZ** zeigt das Video genau **einen** Kraftsatz. Die App startet es bei jedem Satz neu (2–4 Sätze je nach Einheit) und spielt in jeder Timer-Phase den passenden Abschnitt.
+
+- Keine Satznummern im Video („Satz 2/3“ o. Ä.), weil die Anzahl variiert. Schlagzeile in der Arbeitsphase: „Linke Seite“ / „Rechte Seite“ (einseitig) bzw. „Los geht’s“ (beidseitig).
+- Intro: nur **ein** kurzer Aufstell-Satz in den ersten höchstens 4 s, dann „Los!“. Er wird bei jedem Satz wiederholt, deshalb knapp halten. Kein Titelbild.
+- Zähler: Wiederholungen „n / N“ pro Seite. N als feste ganze Zahl aus der Wiederholungsvorgabe im Datenblatt wählen (z. B. „ca. 8–12 Wdh.“ → 10), kontrolliertes Tempo, letzte Wiederholung endet mit der Phase. Bei „Pause unten“-Übungen die Pause im Bewegungsablauf sichtbar halten.
+- Equipment (Hantel, Bank, Stufe …) flach und gut erkennbar, in Farbe #8C84B8.
+- **Pausen-Abschluss (letzte 4 s):** Figur legt ab bzw. richtet sich auf und steht ruhig. Schlagzeile „Satzpause“ (Amber), Zähler zeigt den Endstand gedimmt, Ansage „Satz geschafft. Pause.“. **Das letzte Bild bleibt während der gesamten Satzpause (bis zu 70 s) stehen**: ruhige Haltung, keine Bewegungsspuren, kein Konfetti, kein „Sauber gemacht!“, kein Countdown.
 
 ## 3. Bildaufbau (feste Zonen, 720 × 1280 px)
 
@@ -76,7 +86,7 @@ Der Titel im Intro ersetzt Kopfzeile und Schlagzeile: Übungsname groß (72 px, 
 
 ## 7. Gestaltung je Phase
 
-**Intro (erste ≤ 5 s der ersten ARBEIT):** Titelbild (siehe Zone 3), Figur in Ausgangsposition, Sprecher sagt die Aufstell-Anweisung. Dann Schlagzeile „Los!“ (Cyan, ~1 s), Kopfzeile erscheint, Bewegung beginnt.
+**Intro (VIDEO-TYP ÜBUNG, erste ≤ 5 s der ersten ARBEIT; für SATZ siehe Abschnitt 2):** Titelbild (siehe Zone 3), Figur in Ausgangsposition, Sprecher sagt die Aufstell-Anweisung. Dann Schlagzeile „Los!“ (Cyan, ~1 s), Kopfzeile erscheint, Bewegung beginnt.
 
 **ARBEIT:** Schlagzeile = kurzes Aktionswort für das, was gerade passiert, z. B. „Vorwärts“, „Rückwärts“, „Halten“, „Anspannen“, „Linke Seite“, „Rechte Seite“. Zähler:
 - Bewegungsübungen: abgeschlossene Wiederholungen „n / N“, Einheit passend („Kreise“, „Wdh.“, „Schritte“, „Sprünge“)
@@ -87,7 +97,7 @@ Der Titel im Intro ersetzt Kopfzeile und Schlagzeile: Übungsname groß (72 px, 
 
 **WECHSEL:** Schlagzeile „Seitenwechsel“ (Amber), Figur wechselt sichtbar die Seite. In den letzten 3 s stumm 3 – 2 – 1.
 
-**Abschluss:**
+**Abschluss (nur VIDEO-TYP ÜBUNG; für SATZ siehe Abschnitt 2):**
 - Ist die letzte Phase eine PAUSE: Schlagzeile „Locker lassen“ (weiß), in den letzten 4 s „Sauber gemacht!“ (Amber) mit Konfetti in Cyan/Pink/Amber/Weiß und einem Amber-Kreis mit dunklem Haken in der Zähler-Zone.
 - Ist die letzte Phase eine ARBEIT: Bewegung läuft bis zum Ende; nur in den letzten 2 s erscheint „Sauber gemacht!“ mit Konfetti.
 
@@ -101,7 +111,7 @@ Der Titel im Intro ersetzt Kopfzeile und Schlagzeile: Übungsname groß (72 px, 
   - ARBEIT: 1–2 Technik-Hinweise, über die Phase verteilt; bei langen Phasen (> 30 s) ein dritter kurzer Motivationssatz erlaubt
   - PAUSE: „Pause, locker lassen.“ plus Vorschau auf das, was als Nächstes kommt
   - WECHSEL: „Seitenwechsel – jetzt die rechte Seite.“
-  - Abschluss: „Sauber gemacht!“
+  - Abschluss: „Sauber gemacht!“ (VIDEO-TYP ÜBUNG) bzw. „Satz geschafft. Pause.“ (VIDEO-TYP SATZ)
 - **Timing:** Jede Ansage liegt vollständig innerhalb ihrer Phase, beginnt frühestens 0,3 s nach Phasenbeginn (Intro: 0,1 s) und endet spätestens 3 s vor Phasenende (dort piept die App). Ausnahme: „Los!“ und „Sauber gemacht!“.
 - **Kurze Phasen (≤ 6 s):** höchstens ein Wort oder ein ganz kurzer Satz („Pause.“, „Locker.“), sonst keine Ansage. Lieber weglassen als in die Pieptöne hineinsprechen.
 - Untertitel zeigen exakt den gesprochenen Text, synchron, bis 0,3 s nach Satzende.
@@ -119,6 +129,7 @@ Der Titel im Intro ersetzt Kopfzeile und Schlagzeile: Übungsname groß (72 px, 
 - [ ] Keine Überlappung von Figur, Zähler und Untertiteln
 - [ ] Keine Ansage in den letzten 3 s einer Phase (außer „Los!“/„Sauber gemacht!“)
 - [ ] Keine Musik, keine Pieptöne
+- [ ] Nur SATZ: keine Satznummern, letztes Bild ist eine ruhige Pausenhaltung ohne Effekte
 - [ ] Farben, Schrift, Figur und Stimme wie vorgegeben
 
 ## Datenblatt der Übung

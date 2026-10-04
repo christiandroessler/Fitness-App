@@ -6,6 +6,7 @@ import { useTimerPlayer, type TimerPlayer } from './useTimerPlayer';
 import { useWakeLock } from '../../lib/wakeLock';
 import { unlockAudio, primeSpeech, speakHints, stopSpeech, setMuted, isMuted } from '../../lib/sound';
 import { primeVideo } from '../../lib/exerciseVideo';
+import { videoPosition } from '../../lib/videoSync';
 import { berechneStreak, wochenFortschritt } from '../../lib/streak';
 import { StickFigure } from '../StickFigure';
 import { ExerciseVideo } from '../ExerciseVideo';
@@ -226,9 +227,9 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
   const danachText = baueDanachText(player, set);
   const nochMin = Math.round((player.gesamtDauerS - player.vergangeneS) / 60);
   const aktiveHinweise = videoPfad ? undefined : zeigtFuellUebung ? phase.fuellUebung?.hinweise : uebung?.hinweise;
-  const uebungsStart = player.phasen.findIndex((p) => p.uebungIndex === phase?.uebungIndex);
-  const zeitInUebung =
-    player.phasen.slice(uebungsStart, player.phaseIndex).reduce((s, p) => s + p.dauer_s, 0) + (phase ? phase.dauer_s - player.remainingMs / 1000 : 0);
+  const videoPos = videoPfad
+    ? videoPosition(player.phasen, player.phaseIndex, phase ? phase.dauer_s - player.remainingMs / 1000 : 0, uebung?.videoModus ?? 'uebung', uebung?.einseitig ?? false)
+    : null;
 
   return (
     <div className={`timer-screen ${videoPfad ? 'timer-screen-video' : ''}`}>
@@ -246,8 +247,8 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
       {wakeLockDenied && <div className="timer-hint">Bildschirm-Sperre nicht möglich — das Display kann sich abschalten.</div>}
 
       <div className={`timer-figure ${videoPfad ? 'timer-figure-video' : ''}`}>
-        {videoPfad ? (
-          <ExerciseVideo pfad={videoPfad} active={player.status === 'laufend'} zeit_s={zeitInUebung} muted={muted} />
+        {videoPfad && videoPos ? (
+          <ExerciseVideo pfad={videoPfad} active={player.status === 'laufend' && videoPos.laeuft} zeit_s={videoPos.zeit_s} muted={muted} />
         ) : zeigtFuellUebung && phase.fuellUebung ? (
           fuellFrames ? (
             <StickFigure frames={fuellFrames} active={player.status === 'laufend'} />
