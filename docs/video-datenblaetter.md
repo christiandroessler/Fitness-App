@@ -404,7 +404,7 @@ Zeitplan (muss exakt eingehalten werden):
 === ENDE DATENBLATT ===
 ```
 
-## MOB-01 · 90/90 Hüftwechsel
+## MOB-01 · 90/90 Hüftwechsel — VIDEO VORHANDEN
 
 ```text
 === ÜBUNGS-DATENBLATT ===
