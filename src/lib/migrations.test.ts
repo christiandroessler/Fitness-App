@@ -67,6 +67,25 @@ describe('backfillHinweise', () => {
     expect(result.exercises[0]).toEqual(armkreisen);
   });
 
+  it('aktualisiert einen veralteten Videopfad auf die aktuelle Videodatei', () => {
+    const armkreisen = STARTBIBLIOTHEK.find((ex) => ex.id === 'ERW-05')!;
+    const data = { ...emptyAppData(), exercises: [{ ...armkreisen, videoPfad: 'videos/armkreisen-coach.mp4' }] };
+    const result = backfillHinweise(data);
+    expect(result.exercises[0].videoPfad).toBe(armkreisen.videoPfad);
+  });
+
+  it('migriert auch Sets in Verlaufseinträgen, da diese erneut gestartet werden können', () => {
+    const armkreisen = STARTBIBLIOTHEK.find((ex) => ex.id === 'ERW-05')!;
+    const uebung = alsSetExercise({ exerciseId: 'ERW-05', darstellungsart: 'video', videoPfad: 'videos/armkreisen-coach.mp4' });
+    const set = { id: 'set-1', name: 'Set', uebungen: [uebung], ersteller: 'ich' as const, sichtbarkeit: 'privat' as const, erstelltAm: '', geaendertAm: '' };
+    const data = {
+      ...emptyAppData(),
+      history: [{ id: 'log-1', datum: '2026-10-01', uhrzeit: '10:00', einheitentyp: 'Set', set, absolvierteUebungen: [], status: 'abgeschlossen' as const }]
+    };
+    const result = backfillHinweise(data);
+    expect(result.history[0].set.uebungen[0].videoPfad).toBe(armkreisen.videoPfad);
+  });
+
   it('trägt die Video-Darstellung auch in bereits gespeicherten Sets nach', () => {
     const uebung = alsSetExercise({ exerciseId: 'ERW-05', darstellungsart: 'figur', figur_id: 'fig-arm-circle', videoPfad: undefined });
     const data = { ...emptyAppData(), sets: [{ id: 'set-1', name: 'Set', uebungen: [uebung], ersteller: 'ich' as const, sichtbarkeit: 'privat' as const, erstelltAm: '', geaendertAm: '' }] };

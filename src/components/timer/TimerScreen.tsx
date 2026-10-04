@@ -4,7 +4,8 @@ import { KATEGORIE_LABEL, BEWEGUNGSMUSTER_LABEL } from '../../types';
 import { useAppDataApi, useAppDataState } from '../../lib/AppDataContext';
 import { useTimerPlayer, type TimerPlayer } from './useTimerPlayer';
 import { useWakeLock } from '../../lib/wakeLock';
-import { unlockAudio, primeSpeech, speakHints, setMuted, isMuted } from '../../lib/sound';
+import { unlockAudio, primeSpeech, speakHints, stopSpeech, setMuted, isMuted } from '../../lib/sound';
+import { primeVideo } from '../../lib/exerciseVideo';
 import { berechneStreak, wochenFortschritt } from '../../lib/streak';
 import { StickFigure } from '../StickFigure';
 import { ExerciseVideo } from '../ExerciseVideo';
@@ -64,6 +65,8 @@ export function TimerScreen({ set, onDone }: TimerScreenProps) {
           onClick={() => {
             unlockAudio();
             primeSpeech();
+            const ersteVideoUebung = set.uebungen.find((u) => u.darstellungsart === 'video' && u.videoPfad);
+            if (ersteVideoUebung?.videoPfad) primeVideo(ersteVideoUebung.videoPfad);
             setStarted(true);
           }}
         >
@@ -143,6 +146,8 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
   const phase = player.phase;
   const uebung = phase ? set.uebungen[phase.uebungIndex] : null;
   const zeigtFuellUebung = phase?.art === 'pause' && phase.fuellUebung;
+  // Video-Übungen bringen Anleitung und Hinweise als eigenen Ton mit.
+  const videoPfad = !zeigtFuellUebung && uebung?.darstellungsart === 'video' ? uebung.videoPfad : undefined;
 
   // Liest die Ausführungshinweise einer Übung genau einmal vor — in der Pause, oder
   // beim einzigen Arbeitsabschnitt, falls die Übung gar keine Pause hat (z. B. ein
@@ -157,6 +162,10 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
         spokenRef.current.add(key);
         speakHints(phase.fuellUebung.hinweise);
       }
+      return;
+    }
+    if (videoPfad) {
+      stopSpeech();
       return;
     }
     const key = `main-${idx}`;
@@ -216,10 +225,13 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
   const fuellFrames = zeigtFuellUebung ? getPoseFrames(phase.fuellUebung!.figur_id) : undefined;
   const danachText = baueDanachText(player, set);
   const nochMin = Math.round((player.gesamtDauerS - player.vergangeneS) / 60);
-  const aktiveHinweise = zeigtFuellUebung ? phase.fuellUebung?.hinweise : uebung?.hinweise;
+  const aktiveHinweise = videoPfad ? undefined : zeigtFuellUebung ? phase.fuellUebung?.hinweise : uebung?.hinweise;
+  const uebungsStart = player.phasen.findIndex((p) => p.uebungIndex === phase?.uebungIndex);
+  const zeitInUebung =
+    player.phasen.slice(uebungsStart, player.phaseIndex).reduce((s, p) => s + p.dauer_s, 0) + (phase ? phase.dauer_s - player.remainingMs / 1000 : 0);
 
   return (
-    <div className="timer-screen">
+    <div className={`timer-screen ${videoPfad ? 'timer-screen-video' : ''}`}>
       <div className="timer-meta-row">
         <span>
           Übung {(phase?.uebungIndex ?? 0) + 1} von {set.uebungen.length}
@@ -233,8 +245,10 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
 
       {wakeLockDenied && <div className="timer-hint">Bildschirm-Sperre nicht möglich — das Display kann sich abschalten.</div>}
 
-      <div className={`timer-figure ${uebung?.darstellungsart === 'video' && uebung.videoPfad && !zeigtFuellUebung ? 'timer-figure-video' : ''}`}>
-        {zeigtFuellUebung && phase.fuellUebung ? (
+      <div className={`timer-figure ${videoPfad ? 'timer-figure-video' : ''}`}>
+        {videoPfad ? (
+          <ExerciseVideo pfad={videoPfad} active={player.status === 'laufend'} zeit_s={zeitInUebung} muted={muted} />
+        ) : zeigtFuellUebung && phase.fuellUebung ? (
           fuellFrames ? (
             <StickFigure frames={fuellFrames} active={player.status === 'laufend'} />
           ) : (
@@ -242,8 +256,6 @@ function ActivePlayer({ set, onFinish, result, onDone, muted, onToggleMute, wake
               <strong>{phase.fuellUebung.name}</strong>
             </div>
           )
-        ) : uebung?.darstellungsart === 'video' && uebung.videoPfad ? (
-          <ExerciseVideo pfad={uebung.videoPfad} active={player.status === 'laufend' && phase?.art !== 'pause'} />
         ) : frames ? (
           <StickFigure frames={frames} mirrored={phase?.seite === 'R'} active={player.status === 'laufend' && phase?.art !== 'pause'} />
         ) : (

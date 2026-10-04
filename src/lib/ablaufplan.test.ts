@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildeAblaufplan } from './ablaufplan';
 import type { SetExercise, TrainingSet } from '../types';
+import { STARTBIBLIOTHEK } from '../data/exercises';
 
 function setExercise(overrides: Partial<SetExercise> & Pick<SetExercise, 'parameter'>): SetExercise {
   return {
@@ -58,5 +59,18 @@ describe('buildeAblaufplan', () => {
     const b = setExercise({ parameter: { art: 'halten', dauer_s: 20, wiederholungen: 1, pause_zwischen_wdh_s: 0 } });
     const phasen = buildeAblaufplan(set([a, b]));
     expect(phasen.map((p) => p.uebungIndex)).toEqual([0, 1]);
+  });
+});
+
+describe('Armkreisen-Video', () => {
+  it('ist auf genau die Übungsdauer geschnitten: 2 × (20 s Arbeit + 10 s Pause) = 60 s', () => {
+    const armkreisen = STARTBIBLIOTHEK.find((ex) => ex.id === 'ERW-05')!;
+    const phasen = buildeAblaufplan(set([setExercise({ ...armkreisen, exerciseId: armkreisen.id })]));
+    expect(phasen.map((p) => [p.art, p.dauer_s])).toEqual([
+      ['arbeit', 20],
+      ['pause', 10],
+      ['arbeit', 20],
+      ['pause', 10]
+    ]);
   });
 });

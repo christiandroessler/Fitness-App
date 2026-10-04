@@ -1023,17 +1023,73 @@ button:disabled {
   height: 100%;
   max-width: 100%;
 }
+/* Video-Übungen (Hochformat 9:16) nehmen den gesamten freien Platz ein. Absolut
+   positioniert statt Prozenthöhen, weil WebKit diese in Flex-Kindern unzuverlässig auflöst. */
 .timer-figure-video {
-  height: 42vh;
-  height: 42dvh;
-  min-height: 260px;
+  flex: 1 1 0;
+  height: auto;
+  min-height: 240px;
+  position: relative;
+  background: none;
+  box-shadow: none;
+}
+/* Bei Video-Übungen steht der Name im Video selbst: Phase, Countdown und "Danach"
+   kompakt in einer Zeile, damit das Video möglichst groß wird. */
+.timer-screen-video .timer-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: 12px;
+}
+.timer-screen-video .timer-info h2 {
+  display: none;
+}
+.timer-screen-video .timer-phase-label {
+  margin: 0;
+}
+.timer-screen-video .timer-countdown {
+  font-size: 2.4rem;
+}
+.timer-screen-video .timer-next {
+  margin: 0;
+}
+.timer-video-wrap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  aspect-ratio: 9 / 16;
+  max-width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #000;
 }
 .timer-video {
-  height: 100%;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  max-width: 100%;
+  height: 100%;
   object-fit: contain;
-  border-radius: var(--radius-lg);
+}
+.timer-video-unlock {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background: var(--teal);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
 }
 .timer-figure-fallback {
   text-align: center;
