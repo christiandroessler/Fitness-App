@@ -14,7 +14,7 @@ interface SetExerciseRowProps {
 }
 
 export function SetExerciseRow({ uebung, index, count, onChange, onRemove, onMove }: SetExerciseRowProps) {
-  const frames = uebung.darstellungsart === 'figur' ? getPoseFrames(uebung.figur_id) : undefined;
+  const frames = getPoseFrames(uebung.figur_id);
   const dauer = exerciseDurationSeconds(uebung);
 
   function updateParam<T extends SetExercise['parameter']>(patch: Partial<T>) {

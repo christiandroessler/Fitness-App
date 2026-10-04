@@ -8,10 +8,10 @@ const VIDEO_UEBUNGEN = new Map(STARTBIBLIOTHEK.filter((ex) => ex.darstellungsart
 
 // Darstellung und Videopfad mitgelieferter Videos sind in der App nicht editierbar und
 // werden daher immer auf den aktuellen Stand gebracht (auch wenn die Videodatei ersetzt wurde).
-function mitNachgetragenemVideo<T extends Pick<Exercise, 'darstellungsart' | 'figur_id' | 'videoPfad'> & { exerciseId?: string; id?: string }>(u: T): T {
+function mitNachgetragenemVideo<T extends Pick<Exercise, 'darstellungsart' | 'figur_id' | 'videoPfad' | 'videoModus'> & { exerciseId?: string; id?: string }>(u: T): T {
   const ref = VIDEO_UEBUNGEN.get(u.exerciseId ?? u.id ?? '');
-  if (!ref || (u.darstellungsart === ref.darstellungsart && u.videoPfad === ref.videoPfad)) return u;
-  return { ...u, darstellungsart: ref.darstellungsart, figur_id: ref.figur_id, videoPfad: ref.videoPfad };
+  if (!ref || (u.darstellungsart === ref.darstellungsart && u.videoPfad === ref.videoPfad && u.videoModus === ref.videoModus)) return u;
+  return { ...u, darstellungsart: ref.darstellungsart, figur_id: ref.figur_id, videoPfad: ref.videoPfad, videoModus: ref.videoModus };
 }
 
 function mitNachgetragenenHinweisen(u: SetExercise): SetExercise {

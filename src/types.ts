@@ -90,6 +90,10 @@ export const EQUIPMENT_LABEL: Record<Equipment, string> = {
 
 export type Darstellungsart = 'figur' | 'video';
 
+/** `uebung`: Video deckt die ganze Übung ab (feste Dauer). `satz`: Video zeigt einen
+ * Kraftsatz und wird bei jedem Satz neu gestartet (Satzanzahl variiert je Einheit). */
+export type VideoModus = 'uebung' | 'satz';
+
 export type Sichtbarkeit = 'privat' | 'global';
 
 /** Parameter je Übungsart, siehe Lastenheft 5.1. */
@@ -157,6 +161,7 @@ export interface Exercise {
   /** Mitgeliefertes Video für Standardübungen (App-Asset, Pfad relativ zu `public/`) —
    * anders als `video_datei` (Lastenheft 1b: eigenes, in Drive hochgeladenes Video). */
   videoPfad?: string;
+  videoModus?: VideoModus;
   beschreibung?: string;
   /** Stichpunktartige Ausführungshinweise (Technik/Fehlerquellen), werden im Timer
    * während der Übung angezeigt und einmalig vorgelesen. */
@@ -224,6 +229,7 @@ export interface SetExercise {
   video_start_s?: number;
   video_ende_s?: number;
   videoPfad?: string;
+  videoModus?: VideoModus;
   beschreibung?: string;
   hinweise?: string[];
   /** Füllübung, die in den Satzpausen dieser (Kraft-)Übung eingespielt wird. */

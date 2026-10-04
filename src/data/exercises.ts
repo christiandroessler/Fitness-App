@@ -7,6 +7,7 @@
 // ab; die Kopfzahl "71" im Anhang ist ein Rechenfehler der Vorlage.
 import type {
   Darstellungsart,
+  VideoModus,
   Exercise,
   ExerciseParameter,
   Kategorie,
@@ -59,6 +60,7 @@ interface ExerciseInput {
   figur_id?: string;
   darstellungsart?: Darstellungsart;
   videoPfad?: string;
+  videoModus?: VideoModus;
   beschreibung: string;
   stufe_leichter?: string;
   stufe_schwerer?: string;
@@ -79,6 +81,7 @@ function ex(o: ExerciseInput): Exercise {
     darstellungsart: o.darstellungsart ?? 'figur',
     figur_id: o.figur_id,
     videoPfad: o.videoPfad,
+    videoModus: o.videoModus,
     beschreibung: o.beschreibung,
     stufe_leichter: o.stufe_leichter,
     stufe_schwerer: o.stufe_schwerer,
@@ -94,7 +97,7 @@ const ROH_STARTBIBLIOTHEK: Exercise[] = [
   ex({ id: 'ERW-02', name: 'Laufen auf der Stelle', kategorie: 'erwaermung', bewegungsmuster: 'keins', parameter: iv(30, 15, 2), einseitig: false, equipment: [], figur_id: 'fig-run-in-place', beschreibung: 'Lockeres Traben auf der Stelle, Arme leicht mitschwingen lassen.' }),
   ex({ id: 'ERW-03', name: 'Knieheben im Gehen', kategorie: 'erwaermung', bewegungsmuster: 'keins', parameter: iv(30, 15, 2), einseitig: false, equipment: [], figur_id: 'fig-high-knee-march', beschreibung: 'Knie abwechselnd bis zur Hüfte anheben, aufrechte Haltung.' }),
   ex({ id: 'ERW-04', name: 'Fersenanfersen locker', kategorie: 'erwaermung', bewegungsmuster: 'keins', parameter: iv(30, 15, 2), einseitig: false, equipment: [], figur_id: 'fig-heel-flick', beschreibung: 'Fersen locker Richtung Gesäß führen, kleine schnelle Schritte.' }),
-  ex({ id: 'ERW-05', name: 'Armkreisen vorwärts/rückwärts', kategorie: 'erwaermung', bewegungsmuster: 'keins', parameter: iv(20, 10, 2), einseitig: false, equipment: [], darstellungsart: 'video', videoPfad: 'videos/armkreisen-coach-60s.mp4', beschreibung: 'Große, kontrollierte Kreise: im ersten Intervall vorwärts, im zweiten rückwärts.' }),
+  ex({ id: 'ERW-05', name: 'Armkreisen vorwärts/rückwärts', kategorie: 'erwaermung', bewegungsmuster: 'keins', parameter: iv(20, 10, 2), einseitig: false, equipment: [], figur_id: 'fig-arm-circle', darstellungsart: 'video', videoPfad: 'videos/armkreisen-coach-60s.mp4', beschreibung: 'Große, kontrollierte Kreise: im ersten Intervall vorwärts, im zweiten rückwärts.' }),
   ex({ id: 'ERW-06', name: 'Seitliches Überkreuzlaufen', kategorie: 'erwaermung', bewegungsmuster: 'keins', parameter: iv(20, 10, 2), einseitig: false, equipment: [], figur_id: 'fig-carioca', beschreibung: 'Seitlich mit Überkreuzschritten bewegen, Hüfte bleibt locker.' }),
 
   // A.4 Aktivierung (Activate)
